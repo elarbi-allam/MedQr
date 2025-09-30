@@ -1,0 +1,49 @@
+stages:
+    - build
+    - deploy
+
+variables:
+    DOCKER_IMAGE: registry.gitlab.com/transmarket-app/transmarket-front
+    SSH_REMOTE_USER: $SSH_REMOTE_USER
+    SSH_REMOTE_HOST: $SSH_REMOTE_HOST
+    SSH_REMOTE_PATH: /data
+    TAG: 'latest-dev'
+
+build:
+    image: docker:latest
+    when: manual
+    services:
+        - docker:dind
+    stage: build
+    script:
+        - echo "$ENV_FILE" > .env
+        # - echo $ENV_FILE > .env.local
+        - docker build -t $DOCKER_IMAGE:$TAG .
+        #- docker save $DOCKER_IMAGE:$TAG | gzip > $CI_PROJECT_DIR/image.tar.gz
+        - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+        - docker push $DOCKER_IMAGE:$TAG
+
+deploy:
+    stage: deploy
+    when: manual
+    only:
+        - dev
+    needs:
+        - build
+
+    before_script:
+        - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+        - eval $(ssh-agent -s)
+        - mkdir -p ~/.ssh
+        - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+        - chmod 700 ~/.ssh
+        - ssh-keyscan $SSH_REMOTE_HOST >> ~/.ssh/known_hosts
+    script:
+        - echo "Deploying..."
+        - |
+            ssh "$SSH_REMOTE_USER@$SSH_REMOTE_HOST" << EOF
+              echo "$DEPLOY_TOKEN" | docker login registry.gitlab.com -u "$DEPLOY_TOKEN_USER" --password-stdin
+              echo "$ENV_FILE" > /opt/trans_market_backend/frontend/.env
+              echo "$ENV_FILE" > /opt/trans_market_backend/frontend/.env.local
+              cd /opt/trans_market_backend/frontend/ && docker compose pull && docker compose up -d
+            EOF
