@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { AppSidebar } from "@/components/app-sidebar";
-import { AppNavbar } from "@/components/ui/app-navbar";
+import { AppNavbar } from "@/components/app-navbar-minim";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 
@@ -26,15 +26,11 @@ export default async function DashboardLayout({
             <AppSidebar />
 
             <SidebarInset className="flex-1 w-auto min-w-0 flex flex-col overflow-hidden">
-              {/* Header avec style entreprise mais structure responsive */}
-              <div className="m-2 rounded-2xl border bg-background shadow-sm flex flex-col h-full">
-                <div className="px-6 py-4 border-b border-border/50">
-                  <AppNavbar
-                    variant="dashboard"
-                    showAuthButtons={false}
-                    showUserMenu={true}
-                  />
-                </div>
+              {/* Container principal avec bordure arrondie */}
+              <div className="m-2 rounded-2xl border bg-background shadow-sm flex flex-col h-full overflow-hidden">
+                
+                {/* Navbar minimaliste en haut */}
+                <AppNavbar />
 
                 {/* Contenu scrollable */}
                 <main className="flex-1 overflow-auto px-6 py-4">

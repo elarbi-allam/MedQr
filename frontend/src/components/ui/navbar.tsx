@@ -1,95 +1,73 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { Truck, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Activity } from "lucide-react"
 
-interface NavItem {
-  href: string;
-  label: string;
-  variant?: "ghost" | "default";
-}
+export function Navbar() {
+  const pathname = usePathname()
 
-interface NavbarProps {
-  variant?: "auth" | "marketing";
-  navItems?: NavItem[];
-  showLogo?: boolean;
-  showAuthButtons?: boolean;
-  className?: string;
-}
+  const isPatient = pathname.startsWith("/patient")
+  const isProvider = pathname.startsWith("/provider")
+  const isFacility = pathname.startsWith("/facility")
+  const isHome = pathname === "/"
 
-export function Navbar({
-  variant = "auth",
-  navItems = [],
-  showLogo = true,
-  showAuthButtons = true,
-  className = "",
-}: NavbarProps) {
-  const isMarketing = variant === "marketing";
+  if (!isHome) {
+    return null
+  }
 
   return (
-    <div
-      className={`fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-7xl z-50 glass rounded-xl shadow-lg ${className}`}
-    >
-      <div className="mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-2">
-          {/* Logo */}
-          {showLogo && (
-            <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-brand to-primary rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 group-hover:rotate-3">
-                <Truck className="h-6 w-6 text-brand-foreground" />
+    <nav className="fixed top-2 left-0 right-0 z-50 px-6">
+      <div className="container mx-auto max-w-7xl">
+        <div className="glass-effect border border-border/50 rounded-2xl px-6 py-3 shadow-lg">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Activity className="w-5 h-5 text-primary-foreground" />
               </div>
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold bg-gradient-to-r from-brand to-primary bg-clip-text text-transparent group-hover:from-primary group-hover:to-brand transition-all duration-300">
-                  Transmarket
-                </span>
-                <span className="text-xs text-muted-foreground -mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Transport Intelligent
-                </span>
-              </div>
+              <span className="text-xl font-bold">MedQR</span>
             </Link>
-          )}
 
-          {/* Navigation Items */}
-          {isMarketing && navItems.length > 0 && (
-            <nav className="hidden md:flex items-center space-x-6">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium px-3 py-1.5 rounded-lg hover:bg-accent/10"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          )}
-
-          {/* Auth Buttons */}
-          {showAuthButtons && (
-            <div className="flex items-center space-x-3">
-              <Link href="/login" passHref>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-foreground hover:bg-accent/10 font-medium px-3 py-1.5 rounded-lg"
-                >
-                  Connexion
+            {/* Center Navigation */}
+            <div className="hidden md:flex items-center gap-1">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="h-9">
+                  Home
                 </Button>
               </Link>
-              <Link href="/register" passHref>
-                <Button
-                  size="sm"
-                  className="bg-gradient-to-r from-brand to-primary hover:shadow-lg hover:scale-105 transition-all duration-200 text-brand-foreground font-medium px-4 py-1.5 rounded-lg flex items-center gap-2"
-                >
-                  S&apos;inscrire
-                  <ArrowRight className="h-4 w-4" />
+              <Link href="/#features">
+                <Button variant="ghost" size="sm" className="h-9">
+                  Features
+                </Button>
+              </Link>
+              <Link href="/#about">
+                <Button variant="ghost" size="sm" className="h-9">
+                  About
                 </Button>
               </Link>
             </div>
-          )}
+
+            {/* Right Actions */}
+            <div className="flex items-center gap-3">
+              <Link href="/patient/dashboard">
+                <Button variant="ghost" size="sm" className="h-9 hidden sm:inline-flex">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/patient/dashboard">
+                <Button
+                  size="sm"
+                  className="h-10 px-6 rounded-full bg-foreground text-background hover:bg-foreground/90"
+                >
+                  Get Started
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    </nav>
+  )
 }
