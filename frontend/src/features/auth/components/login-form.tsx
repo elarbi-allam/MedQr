@@ -33,13 +33,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { BackgroundEffects } from "@/components/ui/background-effects";
-// import { useLogin } from "../hooks/use-auth";
+import { useLogin } from "../hooks/use-auth";
 import { loginSchema } from "../schemas/login-schema";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
-    const [isPending, setIsPending] = useState(false);
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -49,23 +48,23 @@ export default function LoginForm() {
     mode: "onChange",
   });
 
-  // const { mutate: login, isPending } = useLogin();
+  const { mutate: login, isPending } = useLogin();
 
-  // const onSubmit = (data: z.infer<typeof loginSchema>) => {
-  //   login(data);
-  // };
+  const onSubmit = (data: z.infer<typeof loginSchema>) => {
+    login(data);
+  };
 
 
-const onSubmit = (data: z.infer<typeof loginSchema>) => {
-  setIsPending(true);
-  console.log("Login data:", data);
+// const onSubmit = (data: z.infer<typeof loginSchema>) => {
+//   setIsPending(true);
+//   console.log("Login data:", data);
   
-  // Simulation d'un appel API
-  setTimeout(() => {
-    setIsPending(false);
-    alert(`Login réussi!\nEmail: ${data.email}`);
-  }, 1500);
-};
+//   // Simulation d'un appel API
+//   setTimeout(() => {
+//     setIsPending(false);
+//     alert(`Login réussi!\nEmail: ${data.email}`);
+//   }, 1500);
+// };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden pt-20">

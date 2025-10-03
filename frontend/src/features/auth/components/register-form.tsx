@@ -45,14 +45,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BackgroundEffects } from "@/components/ui/background-effects";
-// import { useRegister } from "../hooks/use-auth";
+import { useRegister } from "../hooks/use-auth";
 import { registerSchema } from "../schemas/register-schema";
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-const [isPending, setIsPending] = useState(false);
+// const [isPending, setIsPending] = useState(false);
 
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -74,27 +74,27 @@ const [isPending, setIsPending] = useState(false);
     mode: "onChange",
   });
 
-  // const { mutate: register, isPending } = useRegister();
+  const { mutate: register, isPending } = useRegister();
   
   // Surveiller le type d'utilisateur sélectionné pour afficher les champs conditionnels
   const selectedUserType = registerForm.watch("userType");
 
-  // const onSubmit = (data: z.infer<typeof registerSchema>) => {
-  //   register(data);
-  // };
+  const onSubmit = (data: z.infer<typeof registerSchema>) => {
+    register(data);
+  };
 
 
 
-const onSubmit = (data: z.infer<typeof registerSchema>) => {
-  setIsPending(true);
-  console.log("Register data:", data);
+// const onSubmit = (data: z.infer<typeof registerSchema>) => {
+//   setIsPending(true);
+//   console.log("Register data:", data);
   
-  // Simulation d'un appel API
-  setTimeout(() => {
-    setIsPending(false);
-    alert(`Inscription réussie!\nNom: ${data.firstName} ${data.lastName}\nEmail: ${data.email}\nType: ${data.userType}`);
-  }, 1500);
-};
+//   // Simulation d'un appel API
+//   setTimeout(() => {
+//     setIsPending(false);
+//     alert(`Inscription réussie!\nNom: ${data.firstName} ${data.lastName}\nEmail: ${data.email}\nType: ${data.userType}`);
+//   }, 1500);
+// };
 return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden py-20">
       {/* Layout en deux colonnes */}

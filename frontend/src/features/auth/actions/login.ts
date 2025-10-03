@@ -19,10 +19,10 @@ export const login = async (data: {
     password: string;
 }): Promise<ActionsResponse<{ redirectPath: string } | null>> => {
     try {
-        const response = await axiosWrapper.post('/auth/login', data);
-        const accessToken = response.data.accessToken;
+        const response = await axiosWrapper.post('/auth/authenticate', data);
+        const token = response.data.token;
 
-        if (!accessToken) {
+        if (!token) {
             return {
                 status: 'ERROR',
                 statusCode: 400,
@@ -31,10 +31,10 @@ export const login = async (data: {
             };
         }
 
-        await setSession(accessToken);
-        setAuthToken(accessToken);
+        await setSession(token);
+        setAuthToken(token);
 
-        const decodedToken = jwtDecode<JWTPayloadType>(accessToken);
+        const decodedToken = jwtDecode<JWTPayloadType>(token);
         const redirectPath = roleToDashboardPath[decodedToken.role] || '/';
 
         return {
