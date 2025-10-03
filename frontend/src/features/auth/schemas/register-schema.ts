@@ -1,91 +1,320 @@
 import { z } from "zod";
 
-const phoneRegex = /^(06|07)\d{8}$/;
-const nameRegex = /^[a-zA-Zà-üÀ-Ü'-\s]+$/;
+// Regex pour valider le format des données
+const phoneRegex = /^(06|07)\d{8}$/; // Numéros marocains commençant par 06 ou 07
+const nameRegex = /^[a-zA-Zà-üÀ-Ü'-\s]+$/; // Lettres, accents, apostrophes et espaces
 
-export const registerSchema = z
-    .object({
-        // Informations de base communes à tous les types d'utilisateurs
-        firstName: z
-            .string()
-            .min(2, "Le prénom doit contenir au moins 2 caractères.")
-            .regex(nameRegex, "Le prénom ne doit contenir que des lettres."),
+// ============================================
+// SCHÉMA DE BASE (sans validations complexes)
+// ============================================
+const baseRegisterSchema = z.object({
+    // Champ obligatoire : type d'utilisateur
+    userType: z.enum(["PATIENT", "PROVIDER", "FACILITY"], {
+        required_error: "Le type de compte est requis.",
+    }),
 
-        lastName: z
-            .string()
-            .min(2, "Le nom de famille doit contenir au moins 2 caractères.")
-            .regex(nameRegex, "Le nom ne doit contenir que des lettres."),
+    // Champs optionnels (seront requis conditionnellement)
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    address: z.string().optional(),
+    dateOfBirth: z.string().optional(),
+    specialty: z.string().optional(),
+    licenseNumber: z.string().optional(),
+    facilityName: z.string().optional(),
+    facilityType: z.string().optional(),
 
-        email: z.string().email("Adresse email invalide."),
+    // Champs obligatoires pour tous
+    email: z.string().email("Adresse email invalide."),
+    phoneNumber: z.string().regex(phoneRegex, "Le numéro de téléphone doit être valide (ex: 0612345678)."),
 
-        phoneNumber: z.string().regex(phoneRegex, "Le numéro de téléphone doit être valide (ex: 0612345678)."),
+    // Mot de passe avec validations strictes
+    password: z
+        .string()
+        .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
+        .regex(/[A-Z]/, "Le mot de passe doit contenir au moins une lettre majuscule.")
+        .regex(/[a-z]/, "Le mot de passe doit contenir au moins une lettre minuscule.")
+        .regex(/\d/, "Le mot de passe doit contenir au moins un chiffre.")
+        .regex(/[^A-Za-z0-9]/, "Le mot de passe doit contenir au moins un caractère spécial."),
 
-        dateOfBirth: z
-            .string()
-            .min(1, "La date de naissance est requise.")
-            .refine((date) => {
-                const birthDate = new Date(date);
-                const today = new Date();
-                const age = today.getFullYear() - birthDate.getFullYear();
-                return age >= 18 && age <= 120;
-            }, "Vous devez avoir au moins 18 ans."),
+    confirmPassword: z.string().min(1, "Veuillez confirmer votre mot de passe."),
+});
 
-        address: z.string().min(10, "L'adresse doit contenir au moins 10 caractères.").optional(),
-
-        // Type de compte: PATIENT, PROVIDER (Médecin), ou FACILITY (Établissement)
-        userType: z.enum(["PATIENT", "PROVIDER", "FACILITY"], {
-            required_error: "Le type de compte est requis.",
-        }),
-
-        // Champs spécifiques pour les professionnels de santé (PROVIDER)
-        specialty: z.string().optional(),
-        licenseNumber: z.string().optional(),
-
-        // Champs spécifiques pour les établissements médicaux (FACILITY)
-        facilityName: z.string().optional(),
-        facilityType: z.string().optional(),
-
-        // Mot de passe avec validations strictes
-        password: z
-            .string()
-            .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
-            .regex(/[A-Z]/, "Le mot de passe doit contenir au moins une lettre majuscule.")
-            .regex(/[a-z]/, "Le mot de passe doit contenir au moins une lettre minuscule.")
-            .regex(/\d/, "Le mot de passe doit contenir au moins un chiffre.")
-            .regex(/[^A-Za-z0-9]/, "Le mot de passe doit contenir au moins un caractère spécial."),
-
-        confirmPassword: z.string(),
-    })
-    // Vérification que les mots de passe correspondent
+// ============================================
+// SCHÉMA POUR LE FORMULAIRE CLIENT
+// (avec confirmPassword et toutes les validations)
+// ============================================
+export const registerSchema = baseRegisterSchema
+    // 1. Vérifier que password === confirmPassword
     .refine((data) => data.password === data.confirmPassword, {
         message: "Les mots de passe ne correspondent pas.",
-        path: ["confirmPassword"],
+        path: ["confirmPassword"], // L'erreur s'affiche sur le champ confirmPassword
     })
-    // Validation conditionnelle pour les professionnels de santé
-    .refine(
-        (data) => {
-            if (data.userType === "PROVIDER") {
-                return data.specialty && data.specialty.length >= 2 && data.licenseNumber;
+    // 2. Validations conditionnelles selon le userType
+    .superRefine((data, ctx) => {
+        // --- VALIDATIONS POUR PATIENT ---
+        if (data.userType === "PATIENT") {
+            // Prénom obligatoire
+            if (!data.firstName || data.firstName.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le prénom doit contenir au moins 2 caractères.",
+                    path: ["firstName"],
+                });
             }
-            return true;
-        },
-        {
-            message: "La spécialité et le numéro de licence sont requis pour les professionnels de santé.",
-            path: ["specialty"],
-        },
-    )
-    // Validation conditionnelle pour les établissements
-    .refine(
-        (data) => {
-            if (data.userType === "FACILITY") {
-                return data.facilityName && data.facilityName.length >= 2 && data.facilityType;
+            // Prénom doit contenir que des lettres
+            if (data.firstName && !nameRegex.test(data.firstName)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le prénom ne doit contenir que des lettres.",
+                    path: ["firstName"],
+                });
             }
-            return true;
-        },
-        {
-            message: "Le nom et le type d'établissement sont requis.",
-            path: ["facilityName"],
-        },
-    );
+            // Nom obligatoire
+            if (!data.lastName || data.lastName.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom doit contenir au moins 2 caractères.",
+                    path: ["lastName"],
+                });
+            }
+            // Nom doit contenir que des lettres
+            if (data.lastName && !nameRegex.test(data.lastName)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom ne doit contenir que des lettres.",
+                    path: ["lastName"],
+                });
+            }
+            // Date de naissance obligatoire
+            if (!data.dateOfBirth) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "La date de naissance est requise.",
+                    path: ["dateOfBirth"],
+                });
+            } else {
+                // Vérifier l'âge (18-120 ans)
+                const birthDate = new Date(data.dateOfBirth);
+                const today = new Date();
+                const age = today.getFullYear() - birthDate.getFullYear();
+                if (age < 18 || age > 120) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: "Vous devez avoir au moins 18 ans.",
+                        path: ["dateOfBirth"],
+                    });
+                }
+            }
+        }
 
-export type RegisterFormData = z.infer<typeof registerSchema>;
+        // --- VALIDATIONS POUR PROVIDER (Professionnel de santé) ---
+        if (data.userType === "PROVIDER") {
+            // Prénom obligatoire
+            if (!data.firstName || data.firstName.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le prénom doit contenir au moins 2 caractères.",
+                    path: ["firstName"],
+                });
+            }
+            if (data.firstName && !nameRegex.test(data.firstName)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le prénom ne doit contenir que des lettres.",
+                    path: ["firstName"],
+                });
+            }
+            // Nom obligatoire
+            if (!data.lastName || data.lastName.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom doit contenir au moins 2 caractères.",
+                    path: ["lastName"],
+                });
+            }
+            if (data.lastName && !nameRegex.test(data.lastName)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom ne doit contenir que des lettres.",
+                    path: ["lastName"],
+                });
+            }
+            // Spécialité obligatoire
+            if (!data.specialty || data.specialty.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "La spécialité est requise.",
+                    path: ["specialty"],
+                });
+            }
+            // Numéro de licence obligatoire
+            if (!data.licenseNumber || data.licenseNumber.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le numéro de licence est requis.",
+                    path: ["licenseNumber"],
+                });
+            }
+        }
+
+        // --- VALIDATIONS POUR FACILITY (Établissement médical) ---
+        if (data.userType === "FACILITY") {
+            // Nom de l'établissement obligatoire
+            if (!data.facilityName || data.facilityName.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom de l'établissement est requis.",
+                    path: ["facilityName"],
+                });
+            }
+            // Type d'établissement obligatoire
+            if (!data.facilityType) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le type d'établissement est requis.",
+                    path: ["facilityType"],
+                });
+            }
+            // Adresse obligatoire (min 10 caractères)
+            if (!data.address || data.address.length < 10) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "L'adresse est requise (minimum 10 caractères).",
+                    path: ["address"],
+                });
+            }
+        }
+    });
+
+// ============================================
+// SCHÉMA POUR LE SERVEUR
+// (sans confirmPassword car déjà vérifié côté client)
+// ============================================
+export const registerServerSchema = baseRegisterSchema
+    // On retire confirmPassword avec .omit()
+    .omit({ confirmPassword: true })
+    // On applique les MÊMES validations conditionnelles
+    .superRefine((data, ctx) => {
+        // Copier-coller exactement le même contenu du superRefine ci-dessus
+        if (data.userType === "PATIENT") {
+            if (!data.firstName || data.firstName.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le prénom doit contenir au moins 2 caractères.",
+                    path: ["firstName"],
+                });
+            }
+            if (data.firstName && !nameRegex.test(data.firstName)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le prénom ne doit contenir que des lettres.",
+                    path: ["firstName"],
+                });
+            }
+            if (!data.lastName || data.lastName.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom doit contenir au moins 2 caractères.",
+                    path: ["lastName"],
+                });
+            }
+            if (data.lastName && !nameRegex.test(data.lastName)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom ne doit contenir que des lettres.",
+                    path: ["lastName"],
+                });
+            }
+            if (!data.dateOfBirth) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "La date de naissance est requise.",
+                    path: ["dateOfBirth"],
+                });
+            } else {
+                const birthDate = new Date(data.dateOfBirth);
+                const today = new Date();
+                const age = today.getFullYear() - birthDate.getFullYear();
+                if (age < 18 || age > 120) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: "Vous devez avoir au moins 18 ans.",
+                        path: ["dateOfBirth"],
+                    });
+                }
+            }
+        }
+
+        if (data.userType === "PROVIDER") {
+            if (!data.firstName || data.firstName.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le prénom doit contenir au moins 2 caractères.",
+                    path: ["firstName"],
+                });
+            }
+            if (data.firstName && !nameRegex.test(data.firstName)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le prénom ne doit contenir que des lettres.",
+                    path: ["firstName"],
+                });
+            }
+            if (!data.lastName || data.lastName.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom doit contenir au moins 2 caractères.",
+                    path: ["lastName"],
+                });
+            }
+            if (data.lastName && !nameRegex.test(data.lastName)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom ne doit contenir que des lettres.",
+                    path: ["lastName"],
+                });
+            }
+            if (!data.specialty || data.specialty.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "La spécialité est requise.",
+                    path: ["specialty"],
+                });
+            }
+            if (!data.licenseNumber || data.licenseNumber.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le numéro de licence est requis.",
+                    path: ["licenseNumber"],
+                });
+            }
+        }
+
+        if (data.userType === "FACILITY") {
+            if (!data.facilityName || data.facilityName.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom de l'établissement est requis.",
+                    path: ["facilityName"],
+                });
+            }
+            if (!data.facilityType) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le type d'établissement est requis.",
+                    path: ["facilityType"],
+                });
+            }
+            if (!data.address || data.address.length < 10) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "L'adresse est requise (minimum 10 caractères).",
+                    path: ["address"],
+                });
+            }
+        }
+    });
+
+// Types TypeScript générés automatiquement
+export type RegisterFormData = z.infer<typeof registerSchema>; // Pour le formulaire
+export type RegisterServerData = z.infer<typeof registerServerSchema>; // Pour le serveur

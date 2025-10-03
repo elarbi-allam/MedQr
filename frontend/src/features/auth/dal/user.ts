@@ -1,14 +1,15 @@
 "use server";
 
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode} from "jwt-decode";
 import { getSession } from "./session";
 import { UserProfile, UserRole } from "@/lib/types/user.type";
+import { JWTPayloadType } from "@/lib/types/jwt-payload.type";
 
-export const getCurrentUser = async (): Promise<UserProfile | null> => {
+export const getCurrentUser = async (): Promise<UserRole | null> => {
   const token = await getSession();
   if (!token) return null;
   try {
-    return jwtDecode<UserProfile>(token);
+    return jwtDecode<JWTPayloadType>(token).role;
   } catch (error) {
     console.error("Impossible de décoder le token:", error);
     return null;
@@ -17,5 +18,5 @@ export const getCurrentUser = async (): Promise<UserProfile | null> => {
 
 export const getUserRole = async (): Promise<UserRole | null> => {
   const user = await getCurrentUser();
-  return user?.role ?? null;
+  return user?? null;
 };

@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { UserRole } from "@/lib/types/user.type";
 
 const roleToDashboardPath: Record<string, string> = {
-  [UserRole.ADMIN]: "/admin",
-  [UserRole.ENTERPRISE_USER]: "/enterprise-user",
-  [UserRole.USER]: "/user",
+  [UserRole.PATIENT]: "/patient",
+  [UserRole.PROVIDER]: "/provider",
+  [UserRole.FACILITY]: "/facility",
 };
 
 export default function UnauthorizedClientPage({

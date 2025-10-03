@@ -1,6 +1,8 @@
+import { UserRole } from "./user.type";
+
 export type JWTPayloadType = {
-    id: string;
-    role: "admin" | "enterprise_user" | "user";
+    sub: string;
+    role: UserRole;
     iat: number;
     exp: number;
 };

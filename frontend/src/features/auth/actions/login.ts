@@ -9,9 +9,9 @@ import { UserRole } from '@/lib/types/user.type';
 import { JWTPayloadType } from '@/lib/types/jwt-payload.type';
 
 const roleToDashboardPath: Record<string, string> = {
-    [UserRole.ADMIN]: '/admin',
-    [UserRole.ENTERPRISE_USER]: '/enterprise-user',
-    [UserRole.USER]: '/user',
+    [UserRole.PATIENT]: '/patient',
+    [UserRole.PROVIDER]: '/provider',
+    [UserRole.FACILITY]: '/facility',
 };
 
 export const login = async (data: {

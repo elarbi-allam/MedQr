@@ -1,7 +1,7 @@
 export enum UserRole {
-  ADMIN = "admin",
-  ENTERPRISE_USER = "enterprise_user",
-  USER = "user",
+  PATIENT = "ROLE_PATIENT",
+  PROVIDER = "ROLE_PROVIDER",
+  FACILITY = "ROLE_FACILITY",
 }
 
 export type UserProfile = {
