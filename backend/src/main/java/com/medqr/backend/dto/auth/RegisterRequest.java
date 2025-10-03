@@ -22,16 +22,21 @@ public class RegisterRequest {
     @NotNull(message = "Le type d'utilisateur est requis")
     private UserType userType;
 
-    // --- Champs Spécifiques (pour l'entité Patient, HealthcareProvider ou Facility) ---
-    @NotBlank(message = "Le prénom est requis")
+    // --- Champs Patient/Provider (Nom/Prénom) ---
+    // Ces champs seront validés dans les services si nécessaires
     private String firstName;
-
-    @NotBlank(message = "Le nom de famille est requis")
     private String lastName;
 
+    // --- Champs Patient Spécifiques ---
     private LocalDate dateOfBirth;
+    private String phoneNumber; // Nouveau champ du schéma DB
+    private String address;     // Nouveau champ du schéma DB (commun avec Facility)
 
-    // Champ spécifique pour le HealthcareProvider/Facility
-    // (Utilisé pour la spécialité ou le nom de la clinique)
-    private String specificDetail;
+    // --- Champs Provider Spécifiques ---
+    private String specialty;
+    private String licenseNumber;
+
+    // --- Champs Facility Spécifiques ---
+    private String name;
+    private String type; // Ex: Hospital, Lab
 }

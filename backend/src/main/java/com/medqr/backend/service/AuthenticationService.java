@@ -27,7 +27,11 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
-    private final PatientService patientService; // Pour lier l'entité spécifique
+
+    // Services spécifiques (Nécessitent d'être injectés)
+    private final PatientService patientService;
+    private final ProviderService providerService;
+    private final FacilityService facilityService;
 
     /**
      * Gère l'inscription d'un nouvel utilisateur.
@@ -53,14 +57,17 @@ public class AuthenticationService {
 
         User savedUser = userRepository.save(user);
 
-        // 3. Création de l'entité spécifique (Patient)
-        if (request.getUserType() == UserType.PATIENT) {
-            patientService.createPatient(
-                    savedUser,
-                    request.getFirstName(),
-                    request.getLastName(),
-                    request.getDateOfBirth()
-            );
+        // 3. Création de l'entité spécifique (Délégation et Validation Conditionnelle)
+        switch (request.getUserType()) {
+            case PATIENT:
+                patientService.createPatient(savedUser, request);
+                break;
+            case PROVIDER:
+                providerService.createProvider(savedUser, request);
+                break;
+            case FACILITY:
+                facilityService.createFacility(savedUser, request);
+                break;
         }
 
         // --- 4. Envoi de l'email de vérification ---
