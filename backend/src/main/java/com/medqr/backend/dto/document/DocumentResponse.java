@@ -1,9 +1,9 @@
 package com.medqr.backend.dto.document;
 
+import com.medqr.backend.enums.DocumentSource;
 import com.medqr.backend.enums.DocumentType;
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,5 +14,7 @@ public class DocumentResponse {
     private String title;
     private DocumentType type;
     private LocalDateTime uploadDate;
-    private Boolean isFromProvider;
+    private DocumentSource source; // PATIENT, PROVIDER, ou FACILITY
+    private UUID uploaderId; // ID de celui qui a téléversé
+    private String uploaderName; // Nom optionnel (pour affichage)
 }

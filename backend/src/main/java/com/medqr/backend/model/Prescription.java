@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -20,7 +19,6 @@ public class Prescription {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID prescriptionId;
 
-    // Relations Many-to-One
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
@@ -36,8 +34,14 @@ public class Prescription {
     private String details;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_document_id")
+    @JoinColumn(name = "related_document_id", nullable = false)
     private Document relatedDocument;
+
+    @Column(name = "is_completed")
+    private Boolean isCompleted = false;
+
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

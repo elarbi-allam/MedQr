@@ -23,37 +23,31 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Désactiver le CSRF (nouvelle syntaxe lambda)
                 .csrf(csrf -> csrf.disable())
-
                 .exceptionHandling(exception -> exception
-                                // Gère le 403 Forbidden (utilisateur authentifié, mais non autorisé)
-                                .accessDeniedHandler(customAccessDeniedHandler)
-
+                        .accessDeniedHandler(customAccessDeniedHandler)
                         .authenticationEntryPoint(customAuthenticationEntryPoint))
-
-                // 2. Définir les règles d'autorisation (nouvelle syntaxe authorizeHttpRequests)
                 .authorizeHttpRequests(authorize -> authorize
-                        // Permettre l'accès aux endpoints d'auth
+                        // Endpoints publics
                         .requestMatchers("/api/auth/**").permitAll()
-                        // Utilisation de .requestMatchers() à la place de .antMatchers()
+
+                        // Endpoints patients (protégés par @PreAuthorize dans les contrôleurs)
+                        .requestMatchers("/api/patient/**").hasRole("PATIENT")
+
+                        // Endpoints providers (protégés par @PreAuthorize dans les contrôleurs)
+                        .requestMatchers("/api/provider/**").hasRole("PROVIDER")
 
                         // Toutes les autres requêtes nécessitent une authentification
                         .anyRequest().authenticated()
                 )
-
-                // 3. Rendre Spring Security "stateless" (nouvelle syntaxe lambda)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
-                // 4. Définir le fournisseur d'authentification
                 .authenticationProvider(authenticationProvider)
-
-                // 5. Ajouter notre filtre JWT
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -1,15 +1,17 @@
 package com.medqr.backend.dto.prescription;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import java.time.LocalDate;
 import java.util.UUID;
-import lombok.Value;
 
-@Value
+@Data
+@AllArgsConstructor
 public class PrescriptionResponse {
-    UUID prescriptionId;
-    UUID patientId;
-    UUID providerId;
-    String details;
-    LocalDate prescriptionDate;
-    UUID relatedDocumentId; // Pour indiquer le document créé dans le dossier du patient
+    private UUID prescriptionId;
+    private UUID patientId;
+    private UUID providerId;
+    private String details;
+    private LocalDate prescriptionDate;
+    private UUID relatedDocumentId;
 }

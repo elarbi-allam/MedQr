@@ -1,16 +1,17 @@
 package com.medqr.backend.service;
 
-import com.medqr.backend.dto.prescription.PrescriptionRequest;
-import com.medqr.backend.enums.DocumentType;
+import com.medqr.backend.dto.prescription.PrescriptionCreateRequest;
+import com.medqr.backend.enums.DocumentSource;
 import com.medqr.backend.exception.ResourceNotFoundException;
 import com.medqr.backend.model.*;
 import com.medqr.backend.repository.PrescriptionRepository;
-import com.medqr.backend.security.SecurityUtils; // UTILISE SecurityUtils
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -18,66 +19,71 @@ import java.util.UUID;
 public class PrescriptionService {
 
     private final PrescriptionRepository prescriptionRepository;
-    private final PatientService patientService;
     private final ProviderService providerService;
-    private final DocumentService documentService; // NOUVEAU SERVICE INJECTÉ
+    private final PatientService patientService;
+    private final DocumentService documentService;
+    private final MedicalRecordService medicalRecordService;
+    private final ProviderPatientService providerPatientService;
+    private final FileStorageService fileStorageService;
 
+    /**
+     * Crée une ordonnance avec son document PDF associé.
+     */
     @Transactional
-    public Prescription createPrescription(UUID patientId, PrescriptionRequest request) {
-        // 1. Récupérer l'utilisateur (Provider) authentifié
-        User currentUser = SecurityUtils.getCurrentUser();
+    public Prescription createPrescription(UUID patientId, PrescriptionCreateRequest request, MultipartFile file) {
+        HealthcareProvider provider = providerService.getCurrentProvider();
+        providerPatientService.verifyAccessToPatient(patientId);
 
-        // Assurez-vous que le ProviderService a cette méthode pour trouver le Provider par son UserID
-        // (Basé sur la structure de votre entité HealthcareProvider)
-        HealthcareProvider provider = providerService.getProviderByUserId(currentUser.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Médecin non trouvé ou non lié à l'utilisateur connecté."));
-
-        // 2. Récupérer le patient cible
-        // Assurez-vous que le PatientService a cette méthode pour trouver le patient par son ID
         Patient patient = patientService.getPatientById(patientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Patient cible non trouvé."));
+                .orElseThrow(() -> new ResourceNotFoundException("Patient non trouvé."));
 
-        // 3. Créer et enregistrer la Prescription
+        MedicalRecord record = medicalRecordService.getRecordByPatientId(patientId);
+
+        // 1. Stocker le fichier PDF
+        String filePath = fileStorageService.storeFile(file, patientId);
+
+        // 2. Créer le document
+        Document document = new Document();
+        document.setMedicalRecord(record);
+        document.setType(request.getDocumentType());
+        document.setTitle(request.getDocumentTitle());
+        document.setFilePath(filePath);
+        document.setUploader(DocumentSource.PROVIDER, provider.getProviderId());
+
+        Document savedDocument = documentService.saveDocument(document);
+
+        // 3. Créer la prescription
         Prescription prescription = new Prescription();
         prescription.setPatient(patient);
         prescription.setProvider(provider);
         prescription.setDetails(request.getDetails());
+        prescription.setRelatedDocument(savedDocument);
+        prescription.setIsCompleted(false);
 
-        Prescription savedPrescription = prescriptionRepository.save(prescription);
-
-        // 4. Créer le Document associé (pour qu'il apparaisse dans le dossier patient)
-        Document document = createPrescriptionDocument(savedPrescription, provider);
-        savedPrescription.setRelatedDocument(document);
-
-        // Re-sauvegarder la prescription pour lier le Document (nécessaire si vous utilisez OneToOne)
-        prescriptionRepository.save(savedPrescription);
-
-        return savedPrescription;
+        return prescriptionRepository.save(prescription);
     }
 
-    private Document createPrescriptionDocument(Prescription prescription, HealthcareProvider provider) {
-        Document doc = new Document();
+    /**
+     * Marque une ordonnance comme réalisée.
+     */
+    @Transactional
+    public Prescription markPrescriptionAsCompleted(UUID prescriptionId) {
+        Prescription prescription = prescriptionRepository.findById(prescriptionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ordonnance non trouvée."));
 
-        // Récupérer le dossier médical du patient pour l'y attacher
-        // NOTE: Ceci suppose que votre entité Patient a une relation OneToOne avec MedicalRecord,
-        // ou qu'il existe une méthode pour la trouver via le PatientService/MedicalRecordService.
-        MedicalRecord record = prescription.getPatient().getMedicalRecord();
-        if (record == null) {
-            throw new ResourceNotFoundException("Dossier médical du patient non trouvé. Impossible d'ajouter l'ordonnance.");
-        }
-        doc.setMedicalRecord(record);
+        prescription.setIsCompleted(true);
+        prescription.setCompletedAt(LocalDateTime.now());
 
-        // Métadonnées
-        doc.setType(DocumentType.PRESCRIPTION);
-        doc.setTitle("Ordonnance du " + prescription.getPrescriptionDate());
-        doc.setUploadDate(LocalDateTime.now());
-        doc.setIsFromProvider(true);
-        doc.setProviderId(provider.getProviderId());
+        return prescriptionRepository.save(prescription);
+    }
 
-        // Le fichier n'est pas un PDF physique; nous utilisons l'ID de la prescription comme référence de chemin
-        doc.setFilePath("PRESCRIPTION_REF_" + prescription.getPrescriptionId());
+    /**
+     * Récupère toutes les ordonnances d'un patient.
+     */
+    public List<Prescription> getPrescriptionsForPatient(UUID patientId) {
+        Patient patient = patientService.getPatientById(patientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Patient non trouvé."));
 
-        // Enregistrer le document via le service dédié
-        return documentService.saveDocument(doc);
+        return prescriptionRepository.findByPatientOrderByPrescriptionDateDesc(patient);
     }
 }

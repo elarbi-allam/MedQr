@@ -1,46 +1,25 @@
 package com.medqr.backend.controller;
 
-import com.medqr.backend.dto.prescription.PrescriptionRequest;
-import com.medqr.backend.dto.prescription.PrescriptionResponse;
-import com.medqr.backend.model.Prescription;
-import com.medqr.backend.service.PrescriptionService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
+/**
+ * Contrôleur simplifié pour les providers.
+ * Les fonctionnalités de prescription sont maintenant dans ProviderMedicalRecordController.
+ */
 @RestController
 @RequestMapping("/api/provider")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('PROVIDER')")
 public class ProviderController {
 
-    private final PrescriptionService prescriptionService;
+    // Ce contrôleur peut contenir d'autres endpoints spécifiques aux providers
+    // comme la gestion de leur profil, leurs disponibilités, etc.
 
-    // --- Mapper (à mettre dans un mapper dédié dans un projet pro) ---
-    private PrescriptionResponse mapToPrescriptionResponse(Prescription prescription) {
-        // Créez ce DTO de réponse pour ne pas exposer l'entité complète
-        return new PrescriptionResponse(
-                prescription.getPrescriptionId(),
-                prescription.getPatient().getPatientId(),
-                prescription.getProvider().getProviderId(),
-                prescription.getDetails(),
-                prescription.getPrescriptionDate()
-        );
-    }
-
-    /**
-     * [C] Crée une nouvelle ordonnance pour un patient spécifique.
-     * Accessible uniquement par ROLE_PROVIDER (via SecurityConfig)
-     */
-    @PostMapping("/patients/{patientId}/prescriptions")
-    public ResponseEntity<PrescriptionResponse> createPrescription(
-            @PathVariable UUID patientId,
-            @Valid @RequestBody PrescriptionRequest request
-    ) {
-        Prescription newPrescription = prescriptionService.createPrescription(patientId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapToPrescriptionResponse(newPrescription));
+    @GetMapping("/profile")
+    public ResponseEntity<String> getProfile() {
+        return ResponseEntity.ok("Provider profile endpoint");
     }
 }

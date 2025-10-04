@@ -1,4 +1,4 @@
-``package com.medqr.backend.model;
+package com.medqr.backend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -42,4 +42,4 @@ public class Facility {
         this.updatedAt = LocalDateTime.now();
     }
     private LocalDateTime updatedAt = LocalDateTime.now();
-}``
+}

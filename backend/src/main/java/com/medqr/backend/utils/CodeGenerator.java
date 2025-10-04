@@ -1,6 +1,7 @@
 package com.medqr.backend.utils;
 
 import java.security.SecureRandom;
+import java.util.UUID;
 
 public class CodeGenerator {
 
@@ -16,5 +17,12 @@ public class CodeGenerator {
             sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
         }
         return sb.toString();
+    }
+
+    /**
+     * Génère un code d'accès pour QR code (plus court et lisible).
+     */
+    public static String generateAccessCode() {
+        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }
