@@ -10,4 +10,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // Méthode clé pour la connexion : rechercher un utilisateur par son email
     Optional<User> findByEmail(String email);
     Optional<User> findByVerificationCode(String verificationCode); // Pour l'email de vérification
+    // AJOUTEZ CETTE MÉTHODE : Pour charger par l'ID (le "sub" du token)
+    Optional<User> findByUserId(UUID userId);
 }
