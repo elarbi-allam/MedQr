@@ -12,6 +12,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays; // Ajouté pour Arrays.asList
 
 @Configuration
 @EnableWebSecurity
@@ -27,26 +32,47 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // 1. GESTION CORS INTÉGRÉE (C'est la solution!)
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    // Assurez-vous d'utiliser Arrays.asList() pour les listes
+                    config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+                    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                    config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+                    config.setAllowCredentials(true);
+                    config.setMaxAge(3600L); // Temps de cache pour le preflight
+                    return config;
+                }))
+
+                // 2. Désactiver CSRF
                 .csrf(csrf -> csrf.disable())
+
+                // 3. Gestion des exceptions (401/403)
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(customAccessDeniedHandler)
                         .authenticationEntryPoint(customAuthenticationEntryPoint))
+
+                // 4. Règles d'autorisation
                 .authorizeHttpRequests(authorize -> authorize
                         // Endpoints publics
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // Endpoints patients (protégés par @PreAuthorize dans les contrôleurs)
+                        // Endpoints patients
                         .requestMatchers("/api/patient/**").hasRole("PATIENT")
 
-                        // Endpoints providers (protégés par @PreAuthorize dans les contrôleurs)
+                        // Endpoints providers
                         .requestMatchers("/api/provider/**").hasRole("PROVIDER")
 
                         // Toutes les autres requêtes nécessitent une authentification
                         .anyRequest().authenticated()
                 )
+
+                // 5. Gestion de session
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
+                // 6. Filtre JWT
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
