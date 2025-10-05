@@ -79,7 +79,7 @@ const getUserSpecificItems = (userType?: UserType) => {
             },
             {
                 title: "Mes Documents",
-                url: "/patient/documents",
+                url: "/patient/medical-record",
                 icon: FileText,
             },
             {
@@ -106,7 +106,7 @@ const getUserSpecificItems = (userType?: UserType) => {
         [UserType.PROVIDER]: [
             {
                 title: "Tableau de Bord",
-                url: "/provider/dashboard",
+                url: "/provider",
                 icon: LayoutDashboard,
             },
             {
@@ -128,7 +128,7 @@ const getUserSpecificItems = (userType?: UserType) => {
         [UserType.FACILITY]: [
             {
                 title: "Tableau de Bord",
-                url: "/facility/dashboard",
+                url: "/facility",
                 icon: LayoutDashboard,
             },
             {
