@@ -7,7 +7,7 @@ import { axiosWrapper } from "@/lib/wrappers/axios-wrapper";
 import { getSession } from "@/features/auth/dal/session";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
-import { PatientType, DocumentDataType, PrescriptionType } from "../types/medical-record.types";
+import { PatientType, DocumentDataType, PrescriptionType, PaginatedResponse } from "../types/medical-record.types";
 
 // Get provider's patients
 export async function getProviderPatients(): Promise<ActionsResponse<PatientType[] | null>> {
@@ -31,10 +31,12 @@ export async function getProviderPatients(): Promise<ActionsResponse<PatientType
     }
 }
 
-// Get patient documents
+// Get patient documents with pagination
 export async function getPatientDocumentsAsProvider(
     patientId: string,
-): Promise<ActionsResponse<DocumentDataType[] | null>> {
+    page: number = 0,
+    size: number = 5
+): Promise<ActionsResponse<PaginatedResponse<DocumentDataType> | null>> {
     try {
         const session = await getSession();
         if (!session) {
@@ -42,7 +44,14 @@ export async function getPatientDocumentsAsProvider(
             return redirect("/unauthorized");
         }
 
-        const response = await axiosWrapper.get<DocumentDataType[]>(`/provider/patients/${patientId}/documents`);
+        const params = new URLSearchParams({
+            page: page.toString(),
+            size: size.toString(),
+        });
+
+        const response = await axiosWrapper.get<PaginatedResponse<DocumentDataType>>(
+            `/provider/patients/${patientId}/documents?${params.toString()}`
+        );
 
         return {
             status: "SUCCESS",
@@ -106,8 +115,13 @@ export async function createPrescription(
     }
 }
 
-// Get patient prescriptions
-export async function getPatientPrescriptions(patientId: string): Promise<ActionsResponse<PrescriptionType[] | null>> {
+// Get patient prescriptions with pagination and filter
+export async function getPatientPrescriptions(
+    patientId: string,
+    isCompleted?: boolean | null,
+    page: number = 0,
+    size: number = 10
+): Promise<ActionsResponse<PaginatedResponse<PrescriptionType> | null>> {
     try {
         const session = await getSession();
         if (!session) {
@@ -115,7 +129,18 @@ export async function getPatientPrescriptions(patientId: string): Promise<Action
             return redirect("/unauthorized");
         }
 
-        const response = await axiosWrapper.get<PrescriptionType[]>(`/provider/patients/${patientId}/prescriptions`);
+        const params = new URLSearchParams({
+            page: page.toString(),
+            size: size.toString(),
+        });
+        
+        if (isCompleted !== undefined && isCompleted !== null) {
+            params.append("isCompleted", isCompleted.toString());
+        }
+
+        const response = await axiosWrapper.get<PaginatedResponse<PrescriptionType>>(
+            `/provider/patients/${patientId}/prescriptions?${params.toString()}`
+        );
 
         return {
             status: "SUCCESS",

@@ -1,3 +1,4 @@
+//frontend\src\app\(dashboard)\provider\patients\[patientId]\page.tsx
 import { redirect } from "next/navigation";
 import { isProvider } from "@/features/auth/dal/role-checks";
 import { getProviderPatients } from "@/features/medical-records/actions/provider-actions";

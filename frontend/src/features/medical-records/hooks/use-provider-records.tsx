@@ -1,3 +1,4 @@
+// frontend/src/features/medical-records/hooks/use-provider-records.tsx
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,10 +24,19 @@ export function useProviderPatients() {
     });
 }
 
-export function usePatientDocumentsAsProvider(patientId: string) {
+export function usePatientDocumentsAsProvider(patientId: string, page: number = 0, size: number = 5) {
     return useQuery({
-        queryKey: ["provider-patient-documents", patientId],
-        queryFn: () => getPatientDocumentsAsProvider(patientId),
+        queryKey: ["provider-patient-documents", patientId, page, size],
+        queryFn: () => getPatientDocumentsAsProvider(patientId, page, size),
+        enabled: !!patientId,
+        staleTime: 1000 * 60 * 2,
+    });
+}
+
+export function usePatientPrescriptions(patientId: string, isCompleted?: boolean | null, page: number = 0, size: number = 10) {
+    return useQuery({
+        queryKey: ["patient-prescriptions", patientId, isCompleted, page, size],
+        queryFn: () => getPatientPrescriptions(patientId, isCompleted, page, size),
         enabled: !!patientId,
         staleTime: 1000 * 60 * 2,
     });
@@ -60,15 +70,6 @@ export function useCreatePrescription(patientId: string) {
                 toast.error(data.message);
             }
         },
-    });
-}
-
-export function usePatientPrescriptions(patientId: string) {
-    return useQuery({
-        queryKey: ["patient-prescriptions", patientId],
-        queryFn: () => getPatientPrescriptions(patientId),
-        enabled: !!patientId,
-        staleTime: 1000 * 60 * 2,
     });
 }
 

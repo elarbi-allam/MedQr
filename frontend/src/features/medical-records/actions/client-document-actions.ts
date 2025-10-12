@@ -1,3 +1,4 @@
+//frontend\src\features\medical-records\actions\client-document-actions.ts
 "use client";
 
 import { errorResponse } from "@/lib/helpers/error-response";

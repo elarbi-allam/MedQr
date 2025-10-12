@@ -1,10 +1,11 @@
+// frontend/src/features/medical-records/components/patient/patient-documents-list.tsx
 "use client";
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Upload, Eye, Download, Activity, FileImage, FileClock, Pill } from "lucide-react";
+import { FileText, Upload, Eye, Download, Activity, FileImage, FileClock, Pill, ChevronLeft, ChevronRight } from "lucide-react";
 import {
     usePatientDocuments,
     useViewPatientDocument,
@@ -33,7 +34,7 @@ const getDocumentIcon = (type: DocumentType) => {
 const getSourceBadge = (source: DocumentSource) => {
     switch (source) {
         case DocumentSource.PATIENT:
-            return <Badge variant="secondary">Patient</Badge>;
+            return <Badge className="backdrop-blur-md bg-emerald-500/20 text-emerald-800 dark:bg-emerald-300/20 dark:text-emerald-200 border border-emerald-400/30">Patient</Badge>;
         case DocumentSource.PROVIDER:
             return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Médecin</Badge>;
         case DocumentSource.FACILITY:
@@ -49,12 +50,18 @@ export default function PatientDocumentsList() {
     const [uploadOpen, setUploadOpen] = useState(false);
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [selectedDoc, setSelectedDoc] = useState<any>(null);
+    const [page, setPage] = useState(0);
+    const pageSize = 5;
 
-    const { data: documentsData, isLoading } = usePatientDocuments();
+    const { data: documentsData, isLoading } = usePatientDocuments(undefined, page, pageSize);
     const { mutate: viewDocument, isPending: isViewing } = useViewPatientDocument();
     const { mutate: downloadDocument, isPending: isDownloading } = useDownloadPatientDocument();
 
-    const documents = documentsData?.data || [];
+    const documents = documentsData?.data?.content || [];
+    const totalPages = documentsData?.data?.totalPages || 0;
+    const totalElements = documentsData?.data?.totalElements || 0;
+    const isFirstPage = documentsData?.data?.first ?? true;
+    const isLastPage = documentsData?.data?.last ?? true;
 
     const handleViewDocument = (documentId: string) => {
         console.log("Viewing document:", documentId);
@@ -69,6 +76,18 @@ export default function PatientDocumentsList() {
     const handleShowDetails = (doc: any) => {
         setSelectedDoc(doc);
         setDetailsOpen(true);
+    };
+
+    const handlePreviousPage = () => {
+        if (page > 0) {
+            setPage(page - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (page < totalPages - 1) {
+            setPage(page + 1);
+        }
     };
 
     if (isLoading) {
@@ -93,7 +112,9 @@ export default function PatientDocumentsList() {
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold">Mes Documents</h2>
-                    <p className="text-muted-foreground">Gérez vos documents médicaux</p>
+                    <p className="text-muted-foreground">
+                        Gérez vos documents médicaux ({totalElements} document{totalElements > 1 ? "s" : ""})
+                    </p>
                 </div>
                 <Button onClick={() => setUploadOpen(true)} className="gap-2">
                     <Upload className="h-4 w-4" />
@@ -114,63 +135,95 @@ export default function PatientDocumentsList() {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {documents.map((doc: any) => (
-                        <Card key={doc.documentId} className="hover:shadow-lg transition-shadow">
-                            <CardHeader className="pb-3">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-primary/10 rounded-lg">{getDocumentIcon(doc.type)}</div>
-                                        <div className="flex-1">
-                                            <CardTitle className="text-base line-clamp-1">{doc.title}</CardTitle>
-                                            <p className="text-xs text-muted-foreground mt-1">
-                                                {new Date(doc.uploadDate).toLocaleDateString("fr-FR")}
-                                            </p>
+                <>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {documents.map((doc: any) => (
+                            <Card key={doc.documentId} className="hover:shadow-lg transition-shadow">
+                                <CardHeader className="pb-3">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-primary/10 rounded-lg">{getDocumentIcon(doc.type)}</div>
+                                            <div className="flex-1">
+                                                <CardTitle className="text-base line-clamp-1">{doc.title}</CardTitle>
+                                                <p className="text-xs text-muted-foreground mt-1">
+                                                    {new Date(doc.uploadDate).toLocaleDateString("fr-FR")}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-muted-foreground">Source:</span>
-                                    {getSourceBadge(doc.source)}
-                                </div>
-                                <div className="flex gap-3">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="flex-1 gap-1"
-                                        onClick={() => handleViewDocument(doc.documentId)}
-                                        disabled={isViewing}
-                                    >
-                                        <Eye className="h-3 w-3" />
-                                        Voir
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="flex-1 gap-1"
-                                        onClick={() => handleDownloadDocument(doc.documentId)}
-                                        disabled={isDownloading}
-                                    >
-                                        <Download className="h-3 w-3" />
-                                        Télécharger
-                                    </Button>
-                                    {doc.type === DocumentType.PRESCRIPTION && (
+                                </CardHeader>
+                                <CardContent className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-muted-foreground">Source:</span>
+                                        {getSourceBadge(doc.source)}
+                                    </div>
+                                    <div className="flex gap-3">
                                         <Button
-                                            variant="primary"
+                                            variant="outline"
                                             size="sm"
                                             className="flex-1 gap-1"
-                                            onClick={() => handleShowDetails(doc)}
+                                            onClick={() => handleViewDocument(doc.documentId)}
+                                            disabled={isViewing}
                                         >
-                                            Voir détails
+                                            <Eye className="h-3 w-3" />
+                                            Voir
                                         </Button>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="flex-1 gap-1"
+                                            onClick={() => handleDownloadDocument(doc.documentId)}
+                                            disabled={isDownloading}
+                                        >
+                                            <Download className="h-3 w-3" />
+                                            Télécharger
+                                        </Button>
+                                        {doc.type === DocumentType.PRESCRIPTION && (
+                                            <Button
+                                                variant="primary"
+                                                size="sm"
+                                                className="flex-1 gap-1"
+                                                onClick={() => handleShowDetails(doc)}
+                                            >
+                                                Détails
+                                            </Button>
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+
+                    {totalPages > 1 && (
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm text-muted-foreground">
+                                Page {page + 1} sur {totalPages}
+                            </p>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handlePreviousPage}
+                                    disabled={isFirstPage}
+                                    className="gap-1"
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                    Précédent
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleNextPage}
+                                    disabled={isLastPage}
+                                    className="gap-1"
+                                >
+                                    Suivant
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
 
             <UploadDocumentDialog open={uploadOpen} setOpen={setUploadOpen} />

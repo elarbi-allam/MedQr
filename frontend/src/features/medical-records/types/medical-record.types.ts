@@ -63,6 +63,38 @@ export type PrescriptionType = {
     details: string;
     prescriptionDate: string;
     relatedDocumentId: string;
-    isCompleted?: boolean;
+    isCompleted?: boolean | null;
     completedAt?: string;
+};
+
+// Nouveaux types pour la pagination
+export type PageableType = {
+    pageNumber: number;
+    pageSize: number;
+    sort: {
+        empty: boolean;
+        sorted: boolean;
+        unsorted: boolean;
+    };
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+};
+
+export type PaginatedResponse<T> = {
+    content: T[];
+    pageable: PageableType;
+    last: boolean;
+    totalPages: number;
+    totalElements: number;
+    size: number;
+    number: number;
+    sort: {
+        empty: boolean;
+        sorted: boolean;
+        unsorted: boolean;
+    };
+    first: boolean;
+    numberOfElements: number;
+    empty: boolean;
 };

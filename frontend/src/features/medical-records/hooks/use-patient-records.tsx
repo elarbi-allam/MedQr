@@ -1,3 +1,4 @@
+// frontend/src/features/medical-records/hooks/use-patient-records.tsx
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -9,13 +10,22 @@ import {
     getPendingAccessRequests,
     approveAccessRequest,
     rejectAccessRequest,
+    getPatientPrescriptions,
 } from "../actions/patient-actions";
 import { viewPatientDocumentClient, downloadPatientDocumentClient } from "../actions/client-document-actions";
 
-export function usePatientDocuments() {
+export function usePatientDocuments(type?: string, page: number = 0, size: number = 10) {
     return useQuery({
-        queryKey: ["patient-documents"],
-        queryFn: () => getPatientDocuments(),
+        queryKey: ["patient-documents", type, page, size],
+        queryFn: () => getPatientDocuments(type, page, size),
+        staleTime: 1000 * 60 * 2,
+    });
+}
+
+export function usePatientPrescriptions(isCompleted?: boolean | null, page: number = 0, size: number = 10) {
+    return useQuery({
+        queryKey: ["patient-prescriptions", isCompleted, page, size],
+        queryFn: () => getPatientPrescriptions(isCompleted, page, size),
         staleTime: 1000 * 60 * 2,
     });
 }

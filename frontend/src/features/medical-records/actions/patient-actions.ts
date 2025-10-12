@@ -7,10 +7,14 @@ import { axiosWrapper } from "@/lib/wrappers/axios-wrapper";
 import { getSession } from "@/features/auth/dal/session";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
-import { DocumentDataType, QRCodeDataType, AccessRequestType } from "../types/medical-record.types";
+import { DocumentDataType, QRCodeDataType, AccessRequestType, PaginatedResponse, PrescriptionType } from "../types/medical-record.types";
 
-// Get patient's documents
-export async function getPatientDocuments(): Promise<ActionsResponse<DocumentDataType[] | null>> {
+// Get patient's documents with pagination
+export async function getPatientDocuments(
+    type?: string,
+    page: number = 0,
+    size: number = 10
+): Promise<ActionsResponse<PaginatedResponse<DocumentDataType> | null>> {
     try {
         const session = await getSession();
         if (!session) {
@@ -18,7 +22,18 @@ export async function getPatientDocuments(): Promise<ActionsResponse<DocumentDat
             return redirect("/unauthorized");
         }
 
-        const response = await axiosWrapper.get<DocumentDataType[]>("/patient/record/documents");
+        const params = new URLSearchParams({
+            page: page.toString(),
+            size: size.toString(),
+        });
+        
+        if (type) {
+            params.append("type", type);
+        }
+
+        const response = await axiosWrapper.get<PaginatedResponse<DocumentDataType>>(
+            `/patient/record/documents?${params.toString()}`
+        );
 
         return {
             status: "SUCCESS",
@@ -28,6 +43,43 @@ export async function getPatientDocuments(): Promise<ActionsResponse<DocumentDat
         };
     } catch (error) {
         return errorResponse(error, "getPatientDocuments");
+    }
+}
+
+// Get patient's prescriptions with pagination and filter
+export async function getPatientPrescriptions(
+    isCompleted?: boolean | null,
+    page: number = 0,
+    size: number = 10
+): Promise<ActionsResponse<PaginatedResponse<PrescriptionType> | null>> {
+    try {
+        const session = await getSession();
+        if (!session) {
+            toast.error("Non autorisé");
+            return redirect("/unauthorized");
+        }
+
+        const params = new URLSearchParams({
+            page: page.toString(),
+            size: size.toString(),
+        });
+        
+        if (isCompleted !== undefined && isCompleted !== null) {
+            params.append("isCompleted", isCompleted.toString());
+        }
+
+        const response = await axiosWrapper.get<PaginatedResponse<PrescriptionType>>(
+            `/patient/prescriptions?${params.toString()}`
+        );
+
+        return {
+            status: "SUCCESS",
+            statusCode: response.status,
+            message: "Ordonnances récupérées",
+            data: response.data,
+        };
+    } catch (error) {
+        return errorResponse(error, "getPatientPrescriptions");
     }
 }
 
