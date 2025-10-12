@@ -1,3 +1,4 @@
+// src/main/java/com/medqr/backend/service/PrescriptionService.java (MISE À JOUR)
 package com.medqr.backend.service;
 
 import com.medqr.backend.dto.prescription.PrescriptionCreateRequest;
@@ -6,12 +7,13 @@ import com.medqr.backend.exception.ResourceNotFoundException;
 import com.medqr.backend.model.*;
 import com.medqr.backend.repository.PrescriptionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -26,9 +28,6 @@ public class PrescriptionService {
     private final ProviderPatientService providerPatientService;
     private final FileStorageService fileStorageService;
 
-    /**
-     * Crée une ordonnance avec son document PDF associé.
-     */
     @Transactional
     public Prescription createPrescription(UUID patientId, PrescriptionCreateRequest request, MultipartFile file) {
         HealthcareProvider provider = providerService.getCurrentProvider();
@@ -39,10 +38,8 @@ public class PrescriptionService {
 
         MedicalRecord record = medicalRecordService.getRecordByPatientId(patientId);
 
-        // 1. Stocker le fichier PDF
         String filePath = fileStorageService.storeFile(file, patientId);
 
-        // 2. Créer le document
         Document document = new Document();
         document.setMedicalRecord(record);
         document.setType(request.getDocumentType());
@@ -52,7 +49,6 @@ public class PrescriptionService {
 
         Document savedDocument = documentService.saveDocument(document);
 
-        // 3. Créer la prescription
         Prescription prescription = new Prescription();
         prescription.setPatient(patient);
         prescription.setProvider(provider);
@@ -63,9 +59,6 @@ public class PrescriptionService {
         return prescriptionRepository.save(prescription);
     }
 
-    /**
-     * Marque une ordonnance comme réalisée.
-     */
     @Transactional
     public Prescription markPrescriptionAsCompleted(UUID prescriptionId) {
         Prescription prescription = prescriptionRepository.findById(prescriptionId)
@@ -77,13 +70,34 @@ public class PrescriptionService {
         return prescriptionRepository.save(prescription);
     }
 
-    /**
-     * Récupère toutes les ordonnances d'un patient.
-     */
-    public List<Prescription> getPrescriptionsForPatient(UUID patientId) {
+    // NOUVELLE: Pagination
+    public Page<Prescription> getPrescriptionsForPatient(UUID patientId, Pageable pageable) {
         Patient patient = patientService.getPatientById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient non trouvé."));
 
-        return prescriptionRepository.findByPatientOrderByPrescriptionDateDesc(patient);
+        return prescriptionRepository.findByPatientOrderByPrescriptionDateDesc(patient, pageable);
+    }
+
+    // NOUVELLE: Pagination avec filtre
+    public Page<Prescription> getPrescriptionsForPatient(UUID patientId, Boolean isCompleted, Pageable pageable) {
+        Patient patient = patientService.getPatientById(patientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Patient non trouvé."));
+
+        if (isCompleted != null) {
+            return prescriptionRepository.findByPatientAndIsCompletedOrderByPrescriptionDateDesc(patient, isCompleted, pageable);
+        }
+
+        return prescriptionRepository.findByPatientOrderByPrescriptionDateDesc(patient, pageable);
+    }
+
+    // NOUVELLE: Pour le patient actuel
+    public Page<Prescription> getMyPrescriptions(Boolean isCompleted, Pageable pageable) {
+        Patient patient = patientService.getCurrentPatient();
+
+        if (isCompleted != null) {
+            return prescriptionRepository.findByPatientAndIsCompletedOrderByPrescriptionDateDesc(patient, isCompleted, pageable);
+        }
+
+        return prescriptionRepository.findByPatientOrderByPrescriptionDateDesc(patient, pageable);
     }
 }

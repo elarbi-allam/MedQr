@@ -1,12 +1,16 @@
+// src/main/java/com/medqr/backend/controller/MedicalRecordController.java (MISE À JOUR)
 package com.medqr.backend.controller;
 
 import com.medqr.backend.dto.document.DocumentResponse;
 import com.medqr.backend.dto.document.DocumentUploadRequest;
+import com.medqr.backend.enums.DocumentType;
 import com.medqr.backend.model.Document;
 import com.medqr.backend.service.MedicalRecordService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,11 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/patient/record")
@@ -26,62 +27,72 @@ import java.util.stream.Collectors;
 @PreAuthorize("hasRole('PATIENT')")
 public class MedicalRecordController {
 
-    private final MedicalRecordService recordService;
+    private final MedicalRecordService medicalRecordService;
 
-    private DocumentResponse mapToDocumentResponse(Document doc) {
-        return DocumentResponse.builder()
+    /**
+     * Lister mes documents avec pagination
+     * GET /api/patient/record/documents?type=ANALYSIS&page=0&size=10
+     */
+    @GetMapping("/documents")
+    public ResponseEntity<Page<DocumentResponse>> getMyDocuments(
+            @RequestParam(required = false) DocumentType type,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Document> documents = medicalRecordService.getAllDocumentsForCurrentUser(type, pageable);
+
+        Page<DocumentResponse> response = documents.map(doc -> DocumentResponse.builder()
                 .documentId(doc.getDocumentId())
                 .title(doc.getTitle())
                 .type(doc.getType())
                 .uploadDate(doc.getUploadDate())
                 .source(doc.getSource())
                 .uploaderId(doc.getUploaderId())
-                .build();
-    }
+                .build());
 
-    @GetMapping("/documents")
-    public ResponseEntity<List<DocumentResponse>> getAllDocuments() {
-        List<Document> documents = recordService.getAllDocumentsForCurrentUser();
-        List<DocumentResponse> response = documents.stream()
-                .map(this::mapToDocumentResponse)
-                .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(value = "/documents", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    /**
+     * Téléverser un document
+     * POST /api/patient/record/documents
+     */
+    @PostMapping("/documents")
     public ResponseEntity<DocumentResponse> uploadDocument(
-            @Valid @ModelAttribute DocumentUploadRequest request,
-            @RequestPart("file") MultipartFile file
-    ) {
-        if (file.isEmpty() || !file.getOriginalFilename().toLowerCase().endsWith(".pdf")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Le fichier est manquant ou n'est pas un PDF.");
-        }
+            @RequestParam String title,
+            @RequestParam DocumentType type,
+            @RequestParam("file") MultipartFile file) {
 
-        try {
-            Document newDoc = recordService.uploadDocument(request, file);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(mapToDocumentResponse(newDoc));
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Erreur lors du téléversement.", e);
-        }
+        DocumentUploadRequest request = new DocumentUploadRequest();
+        request.setTitle(title);
+        request.setType(type);
+
+        Document document = medicalRecordService.uploadDocument(request, file);
+
+        DocumentResponse response = DocumentResponse.builder()
+                .documentId(document.getDocumentId())
+                .title(document.getTitle())
+                .type(document.getType())
+                .uploadDate(document.getUploadDate())
+                .source(document.getSource())
+                .uploaderId(document.getUploaderId())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * Visualiser un document
+     * GET /api/patient/record/documents/{documentId}/view
+     */
     @GetMapping("/documents/{documentId}/view")
     public ResponseEntity<Resource> viewDocument(@PathVariable UUID documentId) {
-        try {
-            Resource resource = recordService.loadDocumentFile(documentId);
-            String contentType = "application/pdf";
-            String headerValue = "inline; filename=\"" + resource.getFilename() + "\"";
+        Resource resource = medicalRecordService.loadDocumentFile(documentId);
 
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-                    .body(resource);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Document introuvable.", e);
-        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 }

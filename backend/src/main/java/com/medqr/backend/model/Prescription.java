@@ -45,4 +45,11 @@ public class Prescription {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    // src/main/java/com/medqr/backend/model/Prescription.java (AJOUT)
+    @Column(name = "access_code", unique = true)
+    private String accessCode;
+
+    @Column(name = "access_code_expires_at")
+    private LocalDateTime accessCodeExpiresAt;
 }
