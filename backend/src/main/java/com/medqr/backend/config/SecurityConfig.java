@@ -59,9 +59,17 @@ public class SecurityConfig {
 
                         // Endpoints patients
                         .requestMatchers("/api/patient/**").hasRole("PATIENT")
+                        .requestMatchers("/api/profile/patient").hasRole("PATIENT")
 
                         // Endpoints providers
                         .requestMatchers("/api/provider/**").hasRole("PROVIDER")
+                        .requestMatchers("/api/profile/provider").hasRole("PROVIDER")
+
+                        // Endpoints facilities
+                        .requestMatchers("/api/profile/facility").hasRole("FACILITY")
+
+                        // Changement de mot de passe (accessible à tous les utilisateurs authentifiés)
+                        .requestMatchers("/api/profile/change-password").authenticated()
 
                         // Toutes les autres requêtes nécessitent une authentification
                         .anyRequest().authenticated()
