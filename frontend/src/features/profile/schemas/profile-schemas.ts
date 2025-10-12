@@ -1,28 +1,53 @@
 import * as z from "zod";
 
-const nameRegex = /^[a-zA-Zà-üÀ-Ü'-\s]+$/;
-const phoneRegex = /^(06|07)\d{8}$/;
-export const updateProfileSchema = z.object({
+// Schema commun pour Patient
+export const updatePatientProfileSchema = z.object({
   firstName: z
     .string()
     .min(2, "Le prénom doit contenir au moins 2 caractères.")
-    .regex(nameRegex, "Le prénom ne doit contenir que des lettres."),
+    .optional(),
   lastName: z
     .string()
-    .min(2, "Le nom de famille doit contenir au moins 2 caractères.")
-    .regex(nameRegex, "Le nom ne doit contenir que des lettres."),
+    .min(2, "Le nom doit contenir au moins 2 caractères.")
+    .optional(),
+  dateOfBirth: z.string().optional(), // Format ISO: "YYYY-MM-DD"
   phoneNumber: z
     .string()
-    .regex(
-      phoneRegex,
-      "Le numéro de téléphone doit être valide (ex: 0612345678)."
-    ),
+    .regex(/^[0-9+\s()-]+$/, "Numéro de téléphone invalide")
+    .optional(),
+  address: z.string().optional(),
 });
 
-export const updateProfileImageSchema = z.object({
-  profile: z.string().min(1, "L'image de profil est requise."),
+// Schema pour Provider
+export const updateProviderProfileSchema = z.object({
+  firstName: z
+    .string()
+    .min(2, "Le prénom doit contenir au moins 2 caractères.")
+    .optional(),
+  lastName: z
+    .string()
+    .min(2, "Le nom doit contenir au moins 2 caractères.")
+    .optional(),
+  specialty: z.string().optional(),
+  phoneNumber: z
+    .string()
+    .regex(/^[0-9+\s()-]+$/, "Numéro de téléphone invalide")
+    .optional(),
+  licenseNumber: z.string().min(3, "Numéro de licence invalide").optional(),
 });
 
+// Schema pour Facility
+export const updateFacilityProfileSchema = z.object({
+  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères.").optional(),
+  type: z.string().optional(),
+  address: z.string().optional(),
+  phoneNumber: z
+    .string()
+    .regex(/^[0-9+\s()-]+$/, "Numéro de téléphone invalide")
+    .optional(),
+});
+
+// Schema pour changement de mot de passe (commun à tous)
 export const changePasswordSchema = z
   .object({
     currentPassword: z
@@ -30,20 +55,7 @@ export const changePasswordSchema = z
       .min(1, { message: "Le mot de passe actuel est requis." }),
     newPassword: z
       .string()
-      .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
-      .regex(
-        /[A-Z]/,
-        "Le mot de passe doit contenir au moins une lettre majuscule."
-      )
-      .regex(
-        /[a-z]/,
-        "Le mot de passe doit contenir au moins une lettre minuscule."
-      )
-      .regex(/\d/, "Le mot de passe doit contenir au moins un chiffre.")
-      .regex(
-        /[^A-Za-z0-9]/,
-        "Le mot de passe doit contenir au moins un caractère spécial."
-      ),
+      .min(8, "Le mot de passe doit contenir au moins 8 caractères."),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {

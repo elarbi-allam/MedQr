@@ -15,26 +15,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useLogout } from "@/features/profile/hooks/use-profile";
-
-// Types
-enum UserType {
-    PATIENT = "PATIENT",
-    PROVIDER = "PROVIDER",
-    FACILITY = "FACILITY",
-}
-
-interface User {
-    userId: string;
-    email: string;
-    userType: UserType;
-    firstName?: string;
-    lastName?: string;
-    specialty?: string;
-    facilityName?: string;
-    phone?: string;
-    address?: string;
-}
+import { useLogout, useCurrentUser } from "@/features/profile/hooks/use-profile";
+import { PatientProfile, ProviderProfile, FacilityProfile, UserType } from "@/lib/types/profile.type";
 
 interface Notification {
     id: string;
@@ -48,7 +30,13 @@ interface AppNavbarProps {
     className?: string;
 }
 
+// Type guards
+const isPatient = (user: any): user is PatientProfile => user?.userType === UserType.PATIENT;
+const isProvider = (user: any): user is ProviderProfile => user?.userType === UserType.PROVIDER;
+const isFacility = (user: any): user is FacilityProfile => user?.userType === UserType.FACILITY;
+
 export function AppNavbar({ className }: AppNavbarProps) {
+    const { data: user, isLoading } = useCurrentUser();
     const logoutMutation = useLogout();
 
     const handleLogout = async () => {
@@ -59,20 +47,8 @@ export function AppNavbar({ className }: AppNavbarProps) {
             console.error("Erreur lors de la déconnexion:", error);
         }
     };
-    // const { data: user } = useCurrentUser();
-    // const { data: notifications } = useNotifications();
 
     // TODO: Remplacer par votre hook réel quand le backend sera prêt
-    const user: User = {
-        userId: "123",
-        email: "sarah.johnson@email.com",
-        userType: UserType.PATIENT,
-        firstName: "Sarah",
-        lastName: "Johnson",
-        phone: "+212 6 12 34 56 78",
-        address: "Casablanca, Morocco",
-    };
-
     const notifications: Notification[] = [
         {
             id: "1",
@@ -99,33 +75,64 @@ export function AppNavbar({ className }: AppNavbarProps) {
 
     const notificationCount = notifications.length;
 
-    const getInitials = (firstName?: string, lastName?: string) => {
-        if (!firstName) return "U";
-        const initials = firstName.charAt(0) + (lastName ? lastName.charAt(0) : "");
-        return initials.toUpperCase();
+    const getInitials = () => {
+        if (!user) return "U";
+
+        if (isFacility(user) && user.name) {
+            return user.name.charAt(0).toUpperCase();
+        }
+        if ((isPatient(user) || isProvider(user)) && user.firstName) {
+            const firstInitial = user.firstName.charAt(0);
+            const lastInitial = user.lastName ? user.lastName.charAt(0) : "";
+            return `${firstInitial}${lastInitial}`.toUpperCase();
+        }
+        return "U";
     };
 
     const getUserLabel = () => {
-        if (user.userType === UserType.PATIENT) {
-            return `${user.firstName} ${user.lastName}`;
-        } else if (user.userType === UserType.PROVIDER) {
-            return `Dr. ${user.lastName}`;
-        } else {
-            return user.facilityName || "Établissement";
+        if (!user) return "Utilisateur";
+
+        if (isFacility(user)) {
+            return user.name || "Établissement";
         }
+        if (isProvider(user)) {
+            return `Dr. ${user.lastName || ""}`;
+        }
+        if (isPatient(user)) {
+            return `${user.firstName || ""} ${user.lastName || ""}`.trim();
+        }
+        return "Utilisateur";
     };
 
     const getUserRole = () => {
+        if (!user) return "Utilisateur";
+
         switch (user.userType) {
             case UserType.PATIENT:
                 return "Patient";
             case UserType.PROVIDER:
-                return user.specialty || "Médecin";
+                return (user as ProviderProfile).specialty || "Médecin";
             case UserType.FACILITY:
-                return "Établissement";
+                return (user as FacilityProfile).type || "Établissement";
             default:
                 return "Utilisateur";
         }
+    };
+
+    const getUserContactInfo = () => {
+        if (!user) return { email: "", phone: "", address: "" };
+
+        return {
+            email: user.email,
+            phone: isPatient(user)
+                ? user.phoneNumber
+                : isProvider(user)
+                  ? user.phoneNumber
+                  : isFacility(user)
+                    ? user.phoneNumber
+                    : "",
+            address: isPatient(user) ? user.address : isFacility(user) ? user.address : "",
+        };
     };
 
     const getNotificationColor = (type: Notification["type"]) => {
@@ -140,6 +147,31 @@ export function AppNavbar({ className }: AppNavbarProps) {
                 return "bg-gray-500";
         }
     };
+
+    if (isLoading) {
+        return (
+            <nav
+                className={cn(
+                    "flex items-center justify-end gap-2 px-4 h-14 bg-background/80 backdrop-blur-sm border-b border-border/50 shrink-0",
+                    className,
+                )}
+            >
+                {/* Squelette pour les notifications */}
+                <div className="h-9 w-9 rounded-full bg-muted/50 animate-pulse" />
+
+                {/* Squelette pour le bouton de déconnexion */}
+                <div className="h-9 w-9 rounded-full bg-muted/50 animate-pulse" />
+
+                {/* Séparateur */}
+                <div className="h-6 w-px bg-border/50 mx-1" />
+
+                {/* Squelette pour l'avatar */}
+                <div className="h-9 w-9 rounded-full bg-muted/50 animate-pulse" />
+            </nav>
+        );
+    }
+
+    const contactInfo = getUserContactInfo();
 
     return (
         <nav
@@ -198,13 +230,13 @@ export function AppNavbar({ className }: AppNavbarProps) {
             </DropdownMenu>
 
             {/* Logout Button */}
-
             <Button
                 variant="ghost"
                 size="sm"
                 className="h-9 w-9 rounded-full hover:bg-destructive/10 text-destructive transition-colors"
                 title="Déconnexion"
                 onClick={handleLogout}
+                disabled={logoutMutation.isPending}
             >
                 <LogOut className="h-4 w-4" />
             </Button>
@@ -221,10 +253,16 @@ export function AppNavbar({ className }: AppNavbarProps) {
                     >
                         <Avatar className="h-7 w-7 ring-2 ring-primary/10">
                             <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                                {getInitials(user.firstName, user.lastName)}
+                                {getInitials()}
                             </AvatarFallback>
                         </Avatar>
-                        <span className="text-sm font-medium hidden sm:inline-block">{user.firstName}</span>
+                        <span className="text-sm font-medium hidden sm:inline-block">
+                            {user
+                                ? isPatient(user) || isProvider(user)
+                                    ? user.firstName
+                                    : user.name?.split(" ")[0]
+                                : "Utilisateur"}
+                        </span>
                     </Button>
                 </HoverCardTrigger>
                 <HoverCardContent
@@ -236,7 +274,7 @@ export function AppNavbar({ className }: AppNavbarProps) {
                         <div className="flex items-start gap-3 p-4 bg-muted/30">
                             <Avatar className="h-14 w-14 ring-2 ring-primary/20">
                                 <AvatarFallback className="bg-primary/10 text-primary text-lg font-bold">
-                                    {getInitials(user.firstName, user.lastName)}
+                                    {getInitials()}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 space-y-1">
@@ -251,18 +289,18 @@ export function AppNavbar({ className }: AppNavbarProps) {
                         <div className="space-y-2.5 p-4 border-t border-border/50">
                             <div className="flex items-center gap-2.5 text-sm group">
                                 <Mail className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                                <span className="text-muted-foreground truncate text-xs">{user.email}</span>
+                                <span className="text-muted-foreground truncate text-xs">{contactInfo.email}</span>
                             </div>
-                            {user.phone && (
+                            {contactInfo.phone && (
                                 <div className="flex items-center gap-2.5 text-sm group">
                                     <Phone className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                                    <span className="text-muted-foreground text-xs">{user.phone}</span>
+                                    <span className="text-muted-foreground text-xs">{contactInfo.phone}</span>
                                 </div>
                             )}
-                            {user.address && (
+                            {contactInfo.address && (
                                 <div className="flex items-center gap-2.5 text-sm group">
                                     <MapPin className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                                    <span className="text-muted-foreground text-xs">{user.address}</span>
+                                    <span className="text-muted-foreground text-xs">{contactInfo.address}</span>
                                 </div>
                             )}
                         </div>
@@ -284,9 +322,10 @@ export function AppNavbar({ className }: AppNavbarProps) {
                                 size="sm"
                                 className="flex-1 h-8 text-xs rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20 hover:border-destructive/50 transition-colors"
                                 onClick={handleLogout}
+                                disabled={logoutMutation.isPending}
                             >
                                 <LogOut className="h-3 w-3 mr-1.5" />
-                                Déconnexion
+                                {logoutMutation.isPending ? "..." : "Déconnexion"}
                             </Button>
                         </div>
                     </div>

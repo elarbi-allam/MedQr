@@ -1,4 +1,4 @@
-//frontend\src\app\(dashboard)\provider\patients\[patientId]\page.tsx
+// frontend\src\app\(dashboard)\provider\patients\[patientId]\page.tsx
 import { redirect } from "next/navigation";
 import { isProvider } from "@/features/auth/dal/role-checks";
 import { getProviderPatients } from "@/features/medical-records/actions/provider-actions";
@@ -8,12 +8,15 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 type Props = {
-    params: {
+    params: Promise<{
         patientId: string;
-    };
+    }>;
 };
 
 export default async function ProviderPatientDetailPage({ params }: Props) {
+    // Await params avant de l'utiliser
+    const { patientId } = await params;
+    
     const isUserProvider = await isProvider();
 
     if (!isUserProvider) {
@@ -22,7 +25,7 @@ export default async function ProviderPatientDetailPage({ params }: Props) {
 
     const patientsData = await getProviderPatients();
     const patients = patientsData?.data || [];
-    const patient = patients.find((p: any) => p.patientId === params.patientId);
+    const patient = patients.find((p: any) => p.patientId === patientId);
 
     if (!patient) {
         return redirect("/dashboard/provider/patients");

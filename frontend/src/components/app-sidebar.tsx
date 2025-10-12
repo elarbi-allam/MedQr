@@ -35,25 +35,9 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-// import { useCurrentUser } from "@/features/profile/hooks/use-profile";
+import { useCurrentUser } from "@/features/profile/hooks/use-profile";
 // import { useSidebarState } from "@/hooks/use-sidebar-state";
-
-// Types pour les utilisateurs du système healthcare
-export enum UserType {
-    PATIENT = "PATIENT",
-    PROVIDER = "PROVIDER",
-    FACILITY = "FACILITY",
-}
-
-interface User {
-    userId: string;
-    email: string;
-    userType: UserType;
-    firstName?: string;
-    lastName?: string;
-    specialty?: string;
-    facilityName?: string;
-}
+import { PatientProfile, ProviderProfile, FacilityProfile, UserType } from "@/lib/types/profile.type";
 
 // URLs selon le type d'utilisateur
 export function getDashboardUrlByUserType(userType: UserType | undefined): string {
@@ -68,7 +52,6 @@ export function getDashboardUrlByUserType(userType: UserType | undefined): strin
             return "/";
     }
 }
-
 
 // Navigation selon le type d'utilisateur
 const getUserSpecificItems = (userType?: UserType) => {
@@ -153,18 +136,20 @@ function SidebarToggleButton() {
         </Button>
     );
 }
+// Type guards pour déterminer le type d'utilisateur
+const isPatient = (user: any): user is PatientProfile => user.userType === UserType.PATIENT;
+const isProvider = (user: any): user is ProviderProfile => user.userType === UserType.PROVIDER;
+const isFacility = (user: any): user is FacilityProfile => user.userType === UserType.FACILITY;
 function UserWelcome() {
-    // const { data: user, isLoading } = useCurrentUser();
+    const { data: user, isLoading, error } = useCurrentUser();
 
-    // TODO: Remplacer par votre hook réel quand le backend sera prêt
-    const isLoading = false;
-    const user: User = {
-        userId: "123",
-        email: "sarah.johnson@email.com",
-        userType: UserType.PATIENT,
-        firstName: "Sarah",
-        lastName: "Johnson",
-    };
+    if (error) {
+        return (
+            <div className="px-4 py-3 border-b border-border/50 text-center text-sm text-red-500">
+                Erreur de chargement
+            </div>
+        );
+    }
 
     if (isLoading) {
         return (
@@ -176,20 +161,28 @@ function UserWelcome() {
 
     if (!user) return null;
 
-    const getInitials = (firstName?: string, lastName?: string) => {
-        if (!firstName) return "U";
-        const initials = firstName.charAt(0) + (lastName ? lastName.charAt(0) : "");
-        return initials.toUpperCase();
+    const getInitials = () => {
+        if (isFacility(user) && user.name) {
+            return user.name.charAt(0).toUpperCase();
+        }
+        if ((isPatient(user) || isProvider(user)) && user.firstName) {
+            const initials = user.firstName.charAt(0) + (user.lastName ? user.lastName.charAt(0) : "");
+            return initials.toUpperCase();
+        }
+        return "U";
     };
 
     const getUserLabel = () => {
-        if (user.userType === UserType.PATIENT) {
-            return `${user.firstName} ${user.lastName}`;
-        } else if (user.userType === UserType.PROVIDER) {
-            return `Dr. ${user.lastName}`;
-        } else {
-            return user.facilityName || "Établissement";
+        if (isFacility(user)) {
+            return user.name || "Établissement";
         }
+        if (isProvider(user)) {
+            return `Dr. ${user.lastName}`;
+        }
+        if (isPatient(user)) {
+            return `${user.firstName} ${user.lastName}`;
+        }
+        return "Utilisateur";
     };
 
     const getUserRole = () => {
@@ -197,9 +190,9 @@ function UserWelcome() {
             case UserType.PATIENT:
                 return "Patient";
             case UserType.PROVIDER:
-                return user.specialty || "Médecin";
+                return (user as ProviderProfile).specialty || "Médecin";
             case UserType.FACILITY:
-                return "Établissement";
+                return (user as FacilityProfile).type || "Établissement";
             default:
                 return "Utilisateur";
         }
@@ -209,9 +202,7 @@ function UserWelcome() {
         <div className="px-4 py-3 border-b border-border/50 group-data-[collapsible=icon]:px-2">
             <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-semibold text-primary">
-                        {getInitials(user.firstName, user.lastName)}
-                    </span>
+                    <span className="text-sm font-semibold text-primary">{getInitials()}</span>
                 </div>
                 <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
                     <p className="text-sm font-medium truncate">{getUserLabel()}</p>
@@ -261,17 +252,30 @@ interface AppSidebarProps {
 
 export function AppSidebar({ showLogo = true }: AppSidebarProps) {
     const pathname = usePathname();
+    const { data: user, isLoading } = useCurrentUser();
 
-    // const { data: user } = useCurrentUser();
-
-    // TODO: Remplacer par votre hook réel quand le backend sera prêt
-    const user: User = {
-        userId: "123",
-        email: "sarah.johnson@email.com",
-        userType: UserType.PATIENT,
-        firstName: "Sarah",
-        lastName: "Johnson",
-    };
+    if (isLoading) {
+        return (
+            <div className="relative">
+                <Sidebar>
+                    <SidebarHeader>
+                        {/* Squelette pour le header */}
+                        <div className="p-4 border-b border-border/50">
+                            <div className="h-10 bg-muted/50 rounded-xl animate-pulse"></div>
+                        </div>
+                    </SidebarHeader>
+                    <SidebarContent>
+                        {/* Squelettes pour les items de navigation */}
+                        {[...Array(5)].map((_, i) => (
+                            <div key={i} className="p-3">
+                                <div className="h-11 bg-muted/50 rounded-full animate-pulse"></div>
+                            </div>
+                        ))}
+                    </SidebarContent>
+                </Sidebar>
+            </div>
+        );
+    }
 
     const dashboardUrl = getDashboardUrlByUserType(user?.userType);
     const userSpecificItems = getUserSpecificItems(user?.userType);

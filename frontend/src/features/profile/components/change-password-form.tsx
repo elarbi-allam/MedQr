@@ -73,7 +73,7 @@ export function ChangePasswordForm() {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-accent/20 text-muted-foreground hover:text-foreground transition-colors"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-accent/20"
                         onClick={() =>
                           setShowCurrentPassword(!showCurrentPassword)
                         }
@@ -106,7 +106,7 @@ export function ChangePasswordForm() {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-accent/20 text-muted-foreground hover:text-foreground transition-colors"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-accent/20"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -134,7 +134,7 @@ export function ChangePasswordForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isPending}>
+            <Button variant="primary" type="submit" disabled={isPending}>
               {isPending ? "Modification..." : "Changer le mot de passe"}
             </Button>
           </form>

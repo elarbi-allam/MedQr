@@ -4,9 +4,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   getMyProfile,
-  updateProfileInfo,
+  updatePatientProfile,
+  updateProviderProfile,
+  updateFacilityProfile,
   changePassword,
 } from "../actions/profile-actions";
+import { UserType } from "@/lib/types/profile.type";
 import { removeSession } from "@/features/auth/dal/session";
 
 export function useCurrentUser() {
@@ -44,8 +47,24 @@ export function useLogout() {
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
+  const { data: currentUser } = useCurrentUser();
+
   return useMutation({
-    mutationFn: updateProfileInfo,
+    mutationFn: async (data: any) => {
+      if (!currentUser) throw new Error("Utilisateur non connecté");
+
+      // Déterminer quelle fonction appeler selon le type d'utilisateur
+      switch (currentUser.userType) {
+        case UserType.PATIENT:
+          return updatePatientProfile(data);
+        case UserType.PROVIDER:
+          return updateProviderProfile(data);
+        case UserType.FACILITY:
+          return updateFacilityProfile(data);
+        default:
+          throw new Error("Type d'utilisateur non supporté");
+      }
+    },
     onSuccess: (data) => {
       if (data?.status === "SUCCESS") {
         toast.success(data.message);
@@ -54,7 +73,7 @@ export function useUpdateProfile() {
         toast.error(data.message);
       }
     },
-    onError: (error) => toast.error(error.message),
+    onError: (error: any) => toast.error(error.message),
   });
 }
 
@@ -68,6 +87,6 @@ export function useChangePassword() {
         toast.error(data.message);
       }
     },
-    onError: (error) => toast.error(error.message),
+    onError: (error: any) => toast.error(error.message),
   });
 }
