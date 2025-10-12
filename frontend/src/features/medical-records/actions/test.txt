@@ -1,0 +1,264 @@
+[curl --location --request POST 'http://localhost:8080/api/facility-prescriptions/generate-code?prescriptionId=fa2e1593-41c1-4417-85fd-8ebd52e1d6a7' \
+
+--header 'Authorization: Bearer <Patient_Token>' 
+
+responce: {
+
+    "accessCode": "20DB4424",
+
+    "expiresAt": "2025-10-19T18:43:01.6226403",
+
+    "prescriptionDetails": "Médicaments: Paracétamol 500mg - 3 fois par jour pendant 5 jours."
+
+}]
+
+[curl --location 'http://localhost:8080/api/facility-prescriptions/scan-code?code=20DB4424' \
+
+--header 'Content-Type: application/json' \
+
+--header 'Authorization: Bearer <Facility_Token>' \
+
+--data '{
+
+  "estimatedDelay": "2 heures",
+
+  "estimatedPrice": 500.0
+
+}' 
+
+response: Demande d'accès envoyée au patient. En attente d'approbation.]
+
+[curl --location 'http://localhost:8080/api/facility-prescriptions/my-pending-requests?page=0&size=10' \
+--header 'Authorization: Bearer <Patient_Token>'
+response: {
+    "content": [
+        {
+            "requestId": "c4029c6e-95e8-419b-80b1-154baf5bedc6",
+            "facilityName": "MedQRlabo",
+            "prescriptionDetails": "Médicaments: Paracétamol 500mg - 3 fois par jour pendant 5 jours.",
+            "status": "PENDING",
+            "requestedAt": "2025-10-12T18:44:51.370733",
+            "estimatedDelay": "2 heures",
+            "estimatedPrice": 500.0
+        }
+    ],
+    "pageable": {
+        "pageNumber": 0,
+        "pageSize": 10,
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 1,
+    "size": 10,
+    "number": 0,
+    "sort": {
+        "empty": true,
+        "sorted": false,
+        "unsorted": true
+    },
+    "first": true,
+    "numberOfElements": 1,
+    "empty": false
+}]
+
+[curl --location --request PUT 'http://localhost:8080/api/facility-prescriptions/approve/c4029c6e-95e8-419b-80b1-154baf5bedc6' \
+--header 'Authorization: Bearer <Patient_Token>'
+response: Accès approuvé pour MedQRlabo. Les autres demandes ont été rejetées automatiquement.]
+
+[curl --location 'http://localhost:8080/api/facility-prescriptions/my-approved?page=0&size=10' \
+--header 'Authorization: Bearer <Facility_Token>'
+response: {
+    "content": [
+        {
+            "requestId": "c4029c6e-95e8-419b-80b1-154baf5bedc6",
+            "facilityName": "MedQRlabo",
+            "prescriptionDetails": "Médicaments: Paracétamol 500mg - 3 fois par jour pendant 5 jours.",
+            "status": "APPROVED",
+            "requestedAt": "2025-10-12T18:44:51.370733",
+            "estimatedDelay": "2 heures",
+            "estimatedPrice": 500.0
+        }
+    ],
+    "pageable": {
+        "pageNumber": 0,
+        "pageSize": 10,
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 1,
+    "size": 10,
+    "number": 0,
+    "sort": {
+        "empty": true,
+        "sorted": false,
+        "unsorted": true
+    },
+    "first": true,
+    "numberOfElements": 1,
+    "empty": false
+}]
+
+[curl --location 'http://localhost:8080/api/facility-prescriptions/c4029c6e-95e8-419b-80b1-154baf5bedc6/prescription/details' \
+--header 'Authorization: Bearer <Facility_Token>'
+response: {
+    "prescriptionId": "fa2e1593-41c1-4417-85fd-8ebd52e1d6a7",
+    "details": "Médicaments: Paracétamol 500mg - 3 fois par jour pendant 5 jours.",
+    "prescriptionDate": "2025-10-12",
+    "isCompleted": false,
+    "completedAt": null,
+    "patientId": "6e312e2b-b8a8-4856-97d0-0d694bc9016e",
+    "patientFirstName": "smiyatPatient",
+    "patientLastName": "kniyto",
+    "patientDateOfBirth": "2004-02-27",
+    "providerId": "a9c0588c-ec93-4f75-b353-6590058d3ec6",
+    "providerFirstName": "smiytLPRO",
+    "providerLastName": "kniyto",
+    "providerSpecialty": "Labo",
+    "relatedDocumentId": "c4b719fd-3157-4835-b7c4-39049d473dcf",
+    "documentTitle": "Ordonnance1 - Contrôle cardiaque",
+    "documentType": "PRESCRIPTION",
+    "documentUploadDate": "2025-10-12T18:38:27.597294"
+}]
+
+[curl --location 'http://localhost:8080/api/facility-prescriptions/c4029c6e-95e8-419b-80b1-154baf5bedc6/prescription' \
+--header 'Authorization: Bearer <Facility_Token>'
+response: en resoit un pdf pas un json]
+
+[curl --location 'http://localhost:8080/api/facility-prescriptions/prescription/fa2e1593-41c1-4417-85fd-8ebd52e1d6a7/requests' \
+--header 'Authorization: Bearer <Patient_Token>'
+response: [
+    {
+        "requestId": "c4029c6e-95e8-419b-80b1-154baf5bedc6",
+        "facilityName": "MedQRlabo",
+        "prescriptionDetails": "Médicaments: Paracétamol 500mg - 3 fois par jour pendant 5 jours.",
+        "status": "APPROVED",
+        "requestedAt": "2025-10-12T18:44:51.370733",
+        "estimatedDelay": "2 heures",
+        "estimatedPrice": 500.0
+    }
+]]
+
+[curl --location 'http://localhost:8080/api/facility-prescriptions/c4029c6e-95e8-419b-80b1-154baf5bedc6/result' \
+--header 'Authorization: Bearer <Facility_Token>' \
+--form 'documentTitle="Résultat analyse sanguine"' \
+--form 'file=@"/C:/Users/ELARBI/Desktop/C2/Atelier1.pdf"'
+response: Résultat ajouté avec succès.]
+
+[curl --location 'http://localhost:8080/api/provider/patients/6e312e2b-b8a8-4856-97d0-0d694bc9016e/prescriptions?page=0&size=10' \
+--header 'Authorization: Bearer <Provider_Token>'
+response: {
+    "content": [
+        {
+            "prescriptionId": "fa2e1593-41c1-4417-85fd-8ebd52e1d6a7",
+            "patientId": "6e312e2b-b8a8-4856-97d0-0d694bc9016e",
+            "providerId": "a9c0588c-ec93-4f75-b353-6590058d3ec6",
+            "details": "Médicaments: Paracétamol 500mg - 3 fois par jour pendant 5 jours.",
+            "prescriptionDate": "2025-10-12",
+            "relatedDocumentId": "c4b719fd-3157-4835-b7c4-39049d473dcf",
+            "isCompleted": null
+        }
+    ],
+    "pageable": {
+        "pageNumber": 0,
+        "pageSize": 10,
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": true,
+    "totalPages": 1,
+    "totalElements": 1,
+    "size": 10,
+    "number": 0,
+    "sort": {
+        "empty": true,
+        "sorted": false,
+        "unsorted": true
+    },
+    "first": true,
+    "numberOfElements": 1,
+    "empty": false
+}]
+
+[curl --location --request PUT 'http://localhost:8080/api/provider/patients/prescriptions/fa2e1593-41c1-4417-85fd-8ebd52e1d6a7/complete' \
+--header 'Authorization: Bearer <Provider_Token>'
+response: {
+    "prescriptionId": "fa2e1593-41c1-4417-85fd-8ebd52e1d6a7",
+    "patientId": "6e312e2b-b8a8-4856-97d0-0d694bc9016e",
+    "providerId": "a9c0588c-ec93-4f75-b353-6590058d3ec6",
+    "details": "Médicaments: Paracétamol 500mg - 3 fois par jour pendant 5 jours.",
+    "prescriptionDate": "2025-10-12",
+    "relatedDocumentId": "c4b719fd-3157-4835-b7c4-39049d473dcf",
+    "isCompleted": null
+}]
+
+$RootPath = "C:\Users\ELARBI\Desktop\medical-record-app\backend" # <- Mets ici ton chemin
+
+$MaxDepth = 4                   # <- Nombre de niveaux à explorer
+
+ function Get-DirectoryTree {
+
+   param(
+
+     [string]$Path,
+
+     [int]$Depth
+
+   )
+
+
+
+   if ($Depth -lt 0) { return }
+
+
+
+   # Liste les fichiers et dossiers dans le répertoire courant
+
+   Get-ChildItem -LiteralPath $Path | ForEach-Object {
+
+     $item = $_
+
+     $indent = " " * (($MaxDepth - $Depth) * 4) # Indentation selon profondeur
+
+     Write-Output "$indent- $($item.Name)"
+
+
+
+     # Si c'est un dossier, appel récursif
+
+     if ($item.PSIsContainer) {
+
+       # 🔸 Important : utiliser FullName tel quel avec -LiteralPath pour éviter les problèmes de crochets
+
+       Get-DirectoryTree -Path $item.FullName -Depth ($Depth - 1)
+
+     }
+
+   }
+
+ }
+
+
+
+Get-DirectoryTree -Path $RootPath -Depth $MaxDepth

@@ -10,15 +10,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-    HoverCard,
-    HoverCardContent,
-    HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useLogout } from "@/features/profile/hooks/use-profile";
 
 // Types
 enum UserType {
@@ -52,9 +49,19 @@ interface AppNavbarProps {
 }
 
 export function AppNavbar({ className }: AppNavbarProps) {
+    const logoutMutation = useLogout();
+
+    const handleLogout = async () => {
+        try {
+            await logoutMutation.mutateAsync();
+            window.location.href = "/login";
+        } catch (error) {
+            console.error("Erreur lors de la déconnexion:", error);
+        }
+    };
     // const { data: user } = useCurrentUser();
     // const { data: notifications } = useNotifications();
-    
+
     // TODO: Remplacer par votre hook réel quand le backend sera prêt
     const user: User = {
         userId: "123",
@@ -138,7 +145,7 @@ export function AppNavbar({ className }: AppNavbarProps) {
         <nav
             className={cn(
                 "flex items-center justify-end gap-2 px-4 h-14 bg-background/80 backdrop-blur-sm border-b border-border/50 shrink-0",
-                className
+                className,
             )}
         >
             {/* Notifications Dropdown */}
@@ -164,7 +171,7 @@ export function AppNavbar({ className }: AppNavbarProps) {
                             {notificationCount}
                         </Badge>
                     </DropdownMenuLabel>
-                    
+
                     <div className="max-h-[400px] overflow-y-auto">
                         {notifications.map((notification) => (
                             <DropdownMenuItem
@@ -172,15 +179,13 @@ export function AppNavbar({ className }: AppNavbarProps) {
                                 className="flex flex-col items-start gap-1.5 py-3 px-4 cursor-pointer hover:bg-muted/50 transition-colors"
                             >
                                 <div className="flex items-center gap-2 w-full">
-                                    <div className={cn("h-2 w-2 rounded-full", getNotificationColor(notification.type))} />
+                                    <div
+                                        className={cn("h-2 w-2 rounded-full", getNotificationColor(notification.type))}
+                                    />
                                     <span className="text-sm font-medium">{notification.title}</span>
                                 </div>
-                                <span className="text-xs text-muted-foreground pl-4">
-                                    {notification.message}
-                                </span>
-                                <span className="text-xs text-muted-foreground/70 pl-4">
-                                    {notification.time}
-                                </span>
+                                <span className="text-xs text-muted-foreground pl-4">{notification.message}</span>
+                                <span className="text-xs text-muted-foreground/70 pl-4">{notification.time}</span>
                             </DropdownMenuItem>
                         ))}
                     </div>
@@ -193,16 +198,16 @@ export function AppNavbar({ className }: AppNavbarProps) {
             </DropdownMenu>
 
             {/* Logout Button */}
-            <Link href="/">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 w-9 rounded-full hover:bg-destructive/10 text-destructive transition-colors"
-                    title="Déconnexion"
-                >
-                    <LogOut className="h-4 w-4" />
-                </Button>
-            </Link>
+
+            <Button
+                variant="ghost"
+                size="sm"
+                className="h-9 w-9 rounded-full hover:bg-destructive/10 text-destructive transition-colors"
+                title="Déconnexion"
+                onClick={handleLogout}
+            >
+                <LogOut className="h-4 w-4" />
+            </Button>
 
             {/* Separator */}
             <div className="h-6 w-px bg-border/50 mx-1" />
@@ -219,9 +224,7 @@ export function AppNavbar({ className }: AppNavbarProps) {
                                 {getInitials(user.firstName, user.lastName)}
                             </AvatarFallback>
                         </Avatar>
-                        <span className="text-sm font-medium hidden sm:inline-block">
-                            {user.firstName}
-                        </span>
+                        <span className="text-sm font-medium hidden sm:inline-block">{user.firstName}</span>
                     </Button>
                 </HoverCardTrigger>
                 <HoverCardContent
@@ -276,16 +279,15 @@ export function AppNavbar({ className }: AppNavbarProps) {
                                     Mon Profil
                                 </Button>
                             </Link>
-                            <Link href="/" className="flex-1">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full h-8 text-xs rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20 hover:border-destructive/50 transition-colors"
-                                >
-                                    <LogOut className="h-3 w-3 mr-1.5" />
-                                    Déconnexion
-                                </Button>
-                            </Link>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex-1 h-8 text-xs rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20 hover:border-destructive/50 transition-colors"
+                                onClick={handleLogout}
+                            >
+                                <LogOut className="h-3 w-3 mr-1.5" />
+                                Déconnexion
+                            </Button>
                         </div>
                     </div>
                 </HoverCardContent>

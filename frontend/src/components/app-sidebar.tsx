@@ -9,6 +9,7 @@ import {
     Pill,
     QrCode,
     History,
+    Building2,
     Users,
     ClipboardList,
     Upload,
@@ -68,6 +69,7 @@ export function getDashboardUrlByUserType(userType: UserType | undefined): strin
     }
 }
 
+
 // Navigation selon le type d'utilisateur
 const getUserSpecificItems = (userType?: UserType) => {
     return {
@@ -93,9 +95,9 @@ const getUserSpecificItems = (userType?: UserType) => {
                 icon: QrCode,
             },
             {
-                title: "Historique Médical",
-                url: "/patient/history",
-                icon: History,
+                title: "Demandes établissements",
+                url: "/patient/facility-requests",
+                icon: Building2,
             },
             {
                 title: "Vaccinations",
@@ -119,11 +121,6 @@ const getUserSpecificItems = (userType?: UserType) => {
                 url: "/provider/prescriptions",
                 icon: Pill,
             },
-            {
-                title: "Demandes d'Accès",
-                url: "/provider/access-requests",
-                icon: QrCode,
-            },
         ],
         [UserType.FACILITY]: [
             {
@@ -132,19 +129,9 @@ const getUserSpecificItems = (userType?: UserType) => {
                 icon: LayoutDashboard,
             },
             {
-                title: "Actions à Réaliser",
-                url: "/facility/action-items",
-                icon: ClipboardList,
-            },
-            {
-                title: "Gestion Documents",
-                url: "/facility/documents",
-                icon: Upload,
-            },
-            {
-                title: "Demandes d'Accès",
-                url: "/facility/access-requests",
-                icon: QrCode,
+                title: "Ordonnances",
+                url: "/facility/prescriptions",
+                icon: Pill,
             },
         ],
     };
