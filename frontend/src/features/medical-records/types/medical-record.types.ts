@@ -1,5 +1,4 @@
 // frontend/src/features/medical-records/types/medical-record.types.ts
-import { z } from "zod";
 
 export enum DocumentType {
     ANALYSIS = "ANALYSIS",
@@ -29,6 +28,7 @@ export type DocumentDataType = {
     uploadDate: string;
     source: DocumentSource;
     uploaderId: string;
+    details: string;
     uploaderName?: string;
     mimeType?: string;
 };

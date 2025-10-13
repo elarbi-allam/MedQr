@@ -4,18 +4,22 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, User, Stethoscope, FileText, Pill } from "lucide-react";
+import { Calendar, User, Stethoscope, Pill } from "lucide-react";
 import { useViewPrescriptionDetails } from "../../hooks/use-facility";
 import { Skeleton } from "@/components/ui/skeleton";
 
+interface Request {
+    requestId: string;
+}
+
 type PrescriptionDetailsDialogProps = {
-    request: any;
+    request: Request | null;
     open: boolean;
     setOpen: (open: boolean) => void;
 };
 
 export default function PrescriptionDetailsDialog({ request, open, setOpen }: PrescriptionDetailsDialogProps) {
-    const { data: detailsData, isLoading } = useViewPrescriptionDetails(request?.requestId);
+    const { data: detailsData, isLoading } = useViewPrescriptionDetails(request?.requestId || "");
     const details = detailsData?.data;
 
     if (!request) return null;
@@ -26,7 +30,7 @@ export default function PrescriptionDetailsDialog({ request, open, setOpen }: Pr
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Pill className="h-5 w-5" />
-                        Détails de l'ordonnance
+                        Détails de l&apos;ordonnance
                     </DialogTitle>
                 </DialogHeader>
 
@@ -86,7 +90,7 @@ export default function PrescriptionDetailsDialog({ request, open, setOpen }: Pr
                         <Separator />
 
                         <div>
-                            <p className="text-sm font-medium mb-2">Détails de l'ordonnance:</p>
+                            <p className="text-sm font-medium mb-2">Détails de l&apos;ordonnance:</p>
                             <div className="bg-muted p-3 rounded-md">
                                 <p className="text-sm whitespace-pre-wrap">{details.details}</p>
                             </div>

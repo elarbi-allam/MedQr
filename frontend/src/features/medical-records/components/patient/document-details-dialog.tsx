@@ -5,9 +5,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { FileText, Calendar, User } from "lucide-react";
+import { DocumentDataType } from "../../types/medical-record.types";
 
 type DocumentDetailsDialogProps = {
-    document: any;
+    document: DocumentDataType | null;
     open: boolean;
     setOpen: (open: boolean) => void;
 };
@@ -71,7 +72,7 @@ export default function DocumentDetailsDialog({ document, open, setOpen }: Docum
                         <>
                             <Separator />
                             <div>
-                                <p className="text-sm font-medium mb-2">Détails de l'ordonnance</p>
+                                <p className="text-sm font-medium mb-2">Détails de l&apos;ordonnance</p>
                                 <div className="bg-muted p-3 rounded-md">
                                     <p className="text-sm whitespace-pre-wrap">{document.details}</p>
                                 </div>

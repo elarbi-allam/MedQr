@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -84,7 +84,7 @@ export default function ScanPrescriptionDialog({ open, setOpen }: ScanPrescripti
                     <TabsContent value="code" className="space-y-4 mt-4">
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="code">Code d'accès</Label>
+                                <Label htmlFor="code">Code d&apos;accès</Label>
                                 <Input
                                     id="code"
                                     value={code}
@@ -139,7 +139,7 @@ export default function ScanPrescriptionDialog({ open, setOpen }: ScanPrescripti
                                 <QrCode className="h-16 w-16 text-muted-foreground" />
                             </div>
                             <p className="text-center text-muted-foreground">
-                                Scanner le code QR de l'ordonnance pour récupérer automatiquement le code
+                                Scanner le code QR de l&apos;ordonnance pour récupérer automatiquement le code
                             </p>
                             <Button onClick={handleScan} className="gap-2">
                                 <Camera className="h-4 w-4" />

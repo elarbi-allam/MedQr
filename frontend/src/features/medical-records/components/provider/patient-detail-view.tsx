@@ -30,12 +30,12 @@ import {
     useViewProviderPatientDocument,
     useDownloadProviderPatientDocument,
 } from "../../hooks/use-provider-records";
-import { DocumentType } from "../../types/medical-record.types";
+import { DocumentDataType, DocumentType, PatientType, PrescriptionType } from "../../types/medical-record.types";
 import { Skeleton } from "@/components/ui/skeleton";
 import CreatePrescriptionDialog from "./create-prescription-dialog";
 
 type PatientDetailViewProps = {
-    patient: any;
+    patient: PatientType;
 };
 
 const getDocumentIcon = (type: DocumentType) => {
@@ -170,13 +170,13 @@ export default function PatientDetailView({ patient }: PatientDetailViewProps) {
                             <CardContent className="flex flex-col items-center justify-center py-12">
                                 <FileText className="h-16 w-16 text-muted-foreground mb-4 opacity-50" />
                                 <p className="text-lg font-medium mb-2">Aucun document</p>
-                                <p className="text-muted-foreground">Ce patient n'a pas encore de documents</p>
+                                <p className="text-muted-foreground">Ce patient n&apos;a pas encore de documents</p>
                             </CardContent>
                         </Card>
                     ) : (
                         <>
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                {documents.map((doc: any) => (
+                                {documents.map((doc: DocumentDataType) => (
                                     <Card key={doc.documentId} className="hover:shadow-lg transition-shadow">
                                         <CardHeader className="pb-3">
                                             <div className="flex items-start gap-3">
@@ -307,7 +307,7 @@ export default function PatientDetailView({ patient }: PatientDetailViewProps) {
                     ) : (
                         <>
                             <div className="space-y-4">
-                                {prescriptions.map((prescription: any) => (
+                                {prescriptions.map((prescription: PrescriptionType) => (
                                     <Card key={prescription.prescriptionId}>
                                         <CardHeader>
                                             <div className="flex items-start justify-between">

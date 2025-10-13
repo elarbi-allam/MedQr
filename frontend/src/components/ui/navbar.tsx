@@ -8,9 +8,6 @@ import { Activity } from "lucide-react";
 export function Navbar() {
     const pathname = usePathname();
 
-    const isPatient = pathname.startsWith("/patient");
-    const isProvider = pathname.startsWith("/provider");
-    const isFacility = pathname.startsWith("/facility");
     const isHome = pathname === "/";
 
     if (!isHome) {

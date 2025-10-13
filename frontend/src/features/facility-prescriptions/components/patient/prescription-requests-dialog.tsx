@@ -7,10 +7,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Building2, Clock, DollarSign, Calendar } from "lucide-react";
 import { useRequestsForPrescription } from "../../hooks/use-patient-facility";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FacilityRequestStatus } from "../../types/facility-prescription.types";
+import { 
+    FacilityRequestStatus, 
+    FacilityPrescriptionRequestResponse 
+} from "../../types/facility-prescription.types";
+import { PrescriptionType } from "@/features/medical-records/types/medical-record.types";
+
 
 type PrescriptionRequestsDialogProps = {
-    prescription: any;
+    prescription: PrescriptionType | null;
     open: boolean;
     setOpen: (open: boolean) => void;
 };
@@ -37,7 +42,7 @@ export default function PrescriptionRequestsDialog({
     open,
     setOpen,
 }: PrescriptionRequestsDialogProps) {
-    const { data: requestsData, isLoading } = useRequestsForPrescription(prescription?.prescriptionId);
+    const { data: requestsData, isLoading } = useRequestsForPrescription(prescription?.prescriptionId || "");
     const requests = requestsData?.data || [];
 
     if (!prescription) return null;
@@ -76,13 +81,13 @@ export default function PrescriptionRequestsDialog({
                                 <Building2 className="h-12 w-12 text-muted-foreground mb-3 opacity-50" />
                                 <p className="text-sm font-medium mb-1">Aucune demande</p>
                                 <p className="text-sm text-muted-foreground text-center">
-                                    Aucun établissement n'a fait de demande pour cette ordonnance
+                                    Aucun établissement n&apos;a fait de demande pour cette ordonnance
                                 </p>
                             </CardContent>
                         </Card>
                     ) : (
                         <div className="space-y-3">
-                            {requests.map((request: any) => (
+                            {requests.map((request: FacilityPrescriptionRequestResponse) => (
                                 <Card key={request.requestId}>
                                     <CardContent className="p-4 space-y-3">
                                         <div className="flex items-start justify-between">

@@ -8,12 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import {
     Pill,
     Eye,
-    Download,
     Upload,
     ChevronLeft,
     ChevronRight,
-    Calendar,
-    User,
     FileText,
     Clock,
     DollarSign,
@@ -25,10 +22,11 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import PrescriptionDetailsDialog from "./prescription-details-dialog";
 import UploadResultDialog from "./upload-result-dialog";
+import { FacilityPrescriptionRequestResponse } from "../../types/facility-prescription.types";
 
 export default function ApprovedPrescriptionsList() {
     const [page, setPage] = useState(0);
-    const [selectedRequest, setSelectedRequest] = useState<any>(null);
+    const [selectedRequest, setSelectedRequest] = useState<FacilityPrescriptionRequestResponse | null>(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [uploadOpen, setUploadOpen] = useState(false);
     const pageSize = 10;
@@ -46,12 +44,12 @@ export default function ApprovedPrescriptionsList() {
         viewDocument(requestId);
     };
 
-    const handleShowDetails = (request: any) => {
+    const handleShowDetails = (request: FacilityPrescriptionRequestResponse) => {
         setSelectedRequest(request);
         setDetailsOpen(true);
     };
 
-    const handleUploadResult = (request: any) => {
+    const handleUploadResult = (request: FacilityPrescriptionRequestResponse) => {
         setSelectedRequest(request);
         setUploadOpen(true);
     };
@@ -79,7 +77,7 @@ export default function ApprovedPrescriptionsList() {
                 <div>
                     <h2 className="text-2xl font-bold">Ordonnances Approuvées</h2>
                     <p className="text-muted-foreground">
-                        Gérez les ordonnances dont vous avez l'accès ({totalElements} ordonnance
+                        Gérez les ordonnances dont vous avez l&apos;accès ({totalElements} ordonnance
                         {totalElements > 1 ? "s" : ""})
                     </p>
                 </div>
@@ -98,7 +96,7 @@ export default function ApprovedPrescriptionsList() {
             ) : (
                 <>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {requests.map((request: any) => (
+                        {requests.map((request: FacilityPrescriptionRequestResponse) => (
                             <Card key={request.requestId} className="hover:shadow-lg transition-shadow">
                                 <CardHeader className="pb-3">
                                     <div className="flex items-start justify-between">

@@ -11,7 +11,7 @@ import {
     useViewPatientDocument,
     useDownloadPatientDocument,
 } from "../../hooks/use-patient-records";
-import { DocumentType, DocumentSource } from "../../types/medical-record.types";
+import { DocumentType, DocumentSource, DocumentDataType } from "../../types/medical-record.types";
 import UploadDocumentDialog from "./upload-document-dialog";
 import DocumentDetailsDialog from "./document-details-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -49,7 +49,7 @@ const getSourceBadge = (source: DocumentSource) => {
 export default function PatientDocumentsList() {
     const [uploadOpen, setUploadOpen] = useState(false);
     const [detailsOpen, setDetailsOpen] = useState(false);
-    const [selectedDoc, setSelectedDoc] = useState<any>(null);
+    const [selectedDoc, setSelectedDoc] = useState<DocumentDataType | null>(null);
     const [page, setPage] = useState(0);
     const pageSize = 5;
 
@@ -73,7 +73,7 @@ export default function PatientDocumentsList() {
         downloadDocument(documentId);
     };
 
-    const handleShowDetails = (doc: any) => {
+    const handleShowDetails = (doc: DocumentDataType) => {
         setSelectedDoc(doc);
         setDetailsOpen(true);
     };
@@ -137,7 +137,7 @@ export default function PatientDocumentsList() {
             ) : (
                 <>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {documents.map((doc: any) => (
+                        {documents.map((doc: DocumentDataType) => (
                             <Card key={doc.documentId} className="hover:shadow-lg transition-shadow">
                                 <CardHeader className="pb-3">
                                     <div className="flex items-start justify-between">

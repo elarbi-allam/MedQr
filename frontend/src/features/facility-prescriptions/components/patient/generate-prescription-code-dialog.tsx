@@ -1,16 +1,20 @@
-// frontend/src/features/facility-prescriptions/components/patient/generate-prescription-code-dialog.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { QrCode, Copy, RefreshCw, Clock, Pill } from "lucide-react";
+import { Copy, RefreshCw, Clock, Pill } from "lucide-react";
 import { useGeneratePrescriptionAccessCode } from "../../hooks/use-patient-facility";
 import QRCode from "qrcode";
 import { toast } from "sonner";
 
+interface Prescription {
+    prescriptionId: string;
+}
+
 type GeneratePrescriptionCodeDialogProps = {
-    prescription: any;
+    prescription: Prescription | null;
     open: boolean;
     setOpen: (open: boolean) => void;
 };
@@ -27,7 +31,7 @@ export default function GeneratePrescriptionCodeDialog({
 
     const { mutate: generateCode, isPending } = useGeneratePrescriptionAccessCode();
 
-    const handleGenerate = () => {
+    const handleGenerate = useCallback(() => {
         if (!prescription?.prescriptionId) return;
 
         generateCode(prescription.prescriptionId, {
@@ -54,7 +58,7 @@ export default function GeneratePrescriptionCodeDialog({
                 }
             },
         });
-    };
+    }, [prescription?.prescriptionId, generateCode]);
 
     const handleCopyCode = () => {
         navigator.clipboard.writeText(accessCode);
@@ -65,7 +69,7 @@ export default function GeneratePrescriptionCodeDialog({
         if (open && prescription && !accessCode) {
             handleGenerate();
         }
-    }, [open, prescription]);
+    }, [open, prescription, accessCode, handleGenerate]);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -86,7 +90,13 @@ export default function GeneratePrescriptionCodeDialog({
                         {qrDataUrl && (
                             <div className="flex justify-center">
                                 <div className="border-4 border-primary rounded-lg p-4 bg-white">
-                                    <img src={qrDataUrl} alt="QR Code" className="w-64 h-64" />
+                                    <Image
+                                        src={qrDataUrl}
+                                        alt="QR Code"
+                                        width={256}
+                                        height={256}
+                                        className="w-64 h-64"
+                                    />
                                 </div>
                             </div>
                         )}
@@ -118,8 +128,8 @@ export default function GeneratePrescriptionCodeDialog({
 
                         <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg">
                             <p className="text-sm text-blue-900 dark:text-blue-100">
-                                Présentez ce code QR ou le code à l'établissement (pharmacie/laboratoire) pour
-                                qu'ils puissent accéder à votre ordonnance.
+                                Présentez ce code QR ou le code à l&apos;établissement (pharmacie/laboratoire) pour
+                                qu&apos;ils puissent accéder à votre ordonnance.
                             </p>
                         </div>
 

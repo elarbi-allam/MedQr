@@ -10,11 +10,12 @@ import {
     viewPrescriptionDocument,
     uploadPrescriptionResult,
 } from "../actions/facility-actions";
+import { FacilityAccessRequest } from "../types/facility-prescription.types";
 
 export function useScanCodeAndRequestAccess() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ code, request }: { code: string; request: any }) =>
+        mutationFn: ({ code, request }: { code: string; request: FacilityAccessRequest }) =>
             scanCodeAndRequestAccess(code, request),
         onSuccess: (data) => {
             if (data.status === "SUCCESS") {

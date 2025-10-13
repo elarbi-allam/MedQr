@@ -41,8 +41,14 @@ clientAxios.interceptors.response.use(
                     filename = matches[1].replace(/['"]/g, "");
                 }
             }
-            (response.data as any).filename = filename;
-            (response.data as any).contentType = response.headers["content-type"] || "application/octet-stream";
+            interface BlobWithMetadata extends Blob {
+                filename?: string;
+                contentType?: string;
+            }
+
+            (response.data as BlobWithMetadata).filename = filename;
+            (response.data as BlobWithMetadata).contentType =
+                response.headers["content-type"] || "application/octet-stream";
         }
         return response;
     },
@@ -62,7 +68,7 @@ export const viewPatientDocumentClient = async (documentId: string): Promise<Act
             message: "Document récupéré",
             data: response.data as Blob,
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         return errorResponse(error, "viewPatientDocumentClient");
     }
 };
@@ -80,7 +86,7 @@ export const downloadPatientDocumentClient = async (documentId: string): Promise
             message: "Document téléchargé",
             data: response.data as Blob,
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         return errorResponse(error, "downloadPatientDocumentClient");
     }
 };
@@ -101,7 +107,7 @@ export const viewProviderPatientDocumentClient = async (
             message: "Document récupéré",
             data: response.data as Blob,
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         return errorResponse(error, "viewProviderPatientDocumentClient");
     }
 };
@@ -122,7 +128,7 @@ export const downloadProviderPatientDocumentClient = async (
             message: "Document téléchargé",
             data: response.data as Blob,
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         return errorResponse(error, "downloadProviderPatientDocumentClient");
     }
 };

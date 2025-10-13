@@ -9,7 +9,7 @@ import {
   updateFacilityProfile,
   changePassword,
 } from "../actions/profile-actions";
-import { UserType } from "@/lib/types/profile.type";
+import { FacilityProfile, PatientProfile, ProviderProfile, UserType } from "@/lib/types/profile.type";
 import { removeSession } from "@/features/auth/dal/session";
 
 export function useCurrentUser() {
@@ -50,7 +50,7 @@ export function useUpdateProfile() {
   const { data: currentUser } = useCurrentUser();
 
   return useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: PatientProfile | ProviderProfile | FacilityProfile) => {
       if (!currentUser) throw new Error("Utilisateur non connecté");
 
       // Déterminer quelle fonction appeler selon le type d'utilisateur
@@ -73,7 +73,7 @@ export function useUpdateProfile() {
         toast.error(data.message);
       }
     },
-    onError: (error: any) => toast.error(error.message),
+    onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "Une erreur est survenue"),
   });
 }
 
@@ -87,6 +87,6 @@ export function useChangePassword() {
         toast.error(data.message);
       }
     },
-    onError: (error: any) => toast.error(error.message),
+    onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "Une erreur est survenue"),
   });
 }

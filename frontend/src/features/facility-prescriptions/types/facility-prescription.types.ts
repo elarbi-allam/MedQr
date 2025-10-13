@@ -4,6 +4,11 @@ export enum FacilityRequestStatus {
     APPROVED = "APPROVED",
     REJECTED = "REJECTED",
 }
+export type FacilityAccessRequest = {
+    estimatedDelay: string;
+    estimatedPrice: number;
+    prescriptionDetails?: string;
+};
 
 export type FacilityAccessCodeResponse = {
     accessCode: string;

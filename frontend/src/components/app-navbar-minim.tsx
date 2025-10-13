@@ -17,6 +17,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useLogout, useCurrentUser } from "@/features/profile/hooks/use-profile";
 import { PatientProfile, ProviderProfile, FacilityProfile, UserType } from "@/lib/types/profile.type";
+import ThemeSwitcher from "./theme-switcher";
 
 interface Notification {
     id: string;
@@ -31,9 +32,14 @@ interface AppNavbarProps {
 }
 
 // Type guards
-const isPatient = (user: any): user is PatientProfile => user?.userType === UserType.PATIENT;
-const isProvider = (user: any): user is ProviderProfile => user?.userType === UserType.PROVIDER;
-const isFacility = (user: any): user is FacilityProfile => user?.userType === UserType.FACILITY;
+const isPatient = (user: PatientProfile | ProviderProfile | FacilityProfile): user is PatientProfile =>
+    user.userType === UserType.PATIENT;
+
+const isProvider = (user: PatientProfile | ProviderProfile | FacilityProfile): user is ProviderProfile =>
+    user.userType === UserType.PROVIDER;
+
+const isFacility = (user: PatientProfile | ProviderProfile | FacilityProfile): user is FacilityProfile =>
+    user.userType === UserType.FACILITY;
 
 export function AppNavbar({ className }: AppNavbarProps) {
     const { data: user, isLoading } = useCurrentUser();
@@ -180,6 +186,8 @@ export function AppNavbar({ className }: AppNavbarProps) {
                 className,
             )}
         >
+            <ThemeSwitcher />
+
             {/* Notifications Dropdown */}
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>

@@ -12,6 +12,7 @@ import {
     useRejectFacilityRequest,
 } from "../../hooks/use-patient-facility";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FacilityPrescriptionRequestResponse } from "../../types/facility-prescription.types";
 
 export default function FacilityRequestsManagement() {
     const [page, setPage] = useState(0);
@@ -72,7 +73,7 @@ export default function FacilityRequestsManagement() {
                 ) : (
                     <>
                         <div className="grid gap-4 md:grid-cols-2">
-                            {requests.map((request: any) => (
+                            {requests.map((request: FacilityPrescriptionRequestResponse) => (
                                 <Card key={request.requestId} className="border-l-4 border-l-yellow-500">
                                     <CardHeader className="pb-3">
                                         <div className="flex items-start justify-between">

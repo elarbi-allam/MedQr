@@ -2,7 +2,7 @@
 
 import { jwtDecode} from "jwt-decode";
 import { getSession } from "./session";
-import { UserProfile, UserRole } from "@/lib/types/user.type";
+import { UserRole } from "@/lib/types/user.type";
 import { JWTPayloadType } from "@/lib/types/jwt-payload.type";
 
 export const getCurrentUser = async (): Promise<UserRole | null> => {

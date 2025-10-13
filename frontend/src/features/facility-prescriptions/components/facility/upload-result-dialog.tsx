@@ -9,8 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Upload } from "lucide-react";
 import { useUploadPrescriptionResult } from "../../hooks/use-facility";
 
+interface Request {
+    requestId: string;
+}
+
 type UploadResultDialogProps = {
-    request: any;
+    request: Request | null;
     open: boolean;
     setOpen: (open: boolean) => void;
 };
@@ -40,7 +44,7 @@ export default function UploadResultDialog({ request, open, setOpen }: UploadRes
                     setFile(null);
                     setOpen(false);
                 },
-            }
+            },
         );
     };
 

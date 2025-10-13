@@ -8,13 +8,8 @@ import {
     FileText,
     Pill,
     QrCode,
-    History,
     Building2,
     Users,
-    ClipboardList,
-    Upload,
-    Bell,
-    LogOut,
     ChevronLeft,
     ChevronRight,
     Syringe,
@@ -36,7 +31,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/features/profile/hooks/use-profile";
-// import { useSidebarState } from "@/hooks/use-sidebar-state";
 import { PatientProfile, ProviderProfile, FacilityProfile, UserType } from "@/lib/types/profile.type";
 
 // URLs selon le type d'utilisateur
@@ -54,7 +48,7 @@ export function getDashboardUrlByUserType(userType: UserType | undefined): strin
 }
 
 // Navigation selon le type d'utilisateur
-const getUserSpecificItems = (userType?: UserType) => {
+const getUserSpecificItems = () => {
     return {
         [UserType.PATIENT]: [
             {
@@ -137,9 +131,14 @@ function SidebarToggleButton() {
     );
 }
 // Type guards pour déterminer le type d'utilisateur
-const isPatient = (user: any): user is PatientProfile => user.userType === UserType.PATIENT;
-const isProvider = (user: any): user is ProviderProfile => user.userType === UserType.PROVIDER;
-const isFacility = (user: any): user is FacilityProfile => user.userType === UserType.FACILITY;
+const isPatient = (user: PatientProfile | ProviderProfile | FacilityProfile): user is PatientProfile =>
+    user.userType === UserType.PATIENT;
+
+const isProvider = (user: PatientProfile | ProviderProfile | FacilityProfile): user is ProviderProfile =>
+    user.userType === UserType.PROVIDER;
+
+const isFacility = (user: PatientProfile | ProviderProfile | FacilityProfile): user is FacilityProfile =>
+    user.userType === UserType.FACILITY;
 function UserWelcome() {
     const { data: user, isLoading, error } = useCurrentUser();
 
@@ -278,7 +277,7 @@ export function AppSidebar({ showLogo = true }: AppSidebarProps) {
     }
 
     const dashboardUrl = getDashboardUrlByUserType(user?.userType);
-    const userSpecificItems = getUserSpecificItems(user?.userType);
+    const userSpecificItems = getUserSpecificItems();
     const navigationItems = (user?.userType && userSpecificItems[user?.userType]) || [];
 
     return (

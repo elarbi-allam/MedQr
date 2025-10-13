@@ -8,12 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileUp, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useCreatePrescription } from "../../hooks/use-provider-records";
-import { DocumentType } from "../../types/medical-record.types";
+import { DocumentType, PatientType } from "../../types/medical-record.types";
 
 type CreatePrescriptionDialogProps = {
-    patient: any;
+    patient: PatientType;
     open: boolean;
     setOpen: (open: boolean) => void;
 };
@@ -85,7 +85,7 @@ export default function CreatePrescriptionDialog({ patient, open, setOpen }: Cre
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="details">Détails de l'ordonnance</Label>
+                        <Label htmlFor="details">Détails de l&apos;ordonnance</Label>
                         <Textarea
                             id="details"
                             value={details}
@@ -108,7 +108,7 @@ export default function CreatePrescriptionDialog({ patient, open, setOpen }: Cre
                             onChange={(e) => setFile(e.target.files?.[0] || null)}
                             required
                         />
-                        <p className="text-xs text-muted-foreground">Fichier PDF de l'ordonnance - Max 10MB</p>
+                        <p className="text-xs text-muted-foreground">Fichier PDF de l&apos;ordonnance - Max 10MB</p>
                     </div>
 
                     <DialogFooter>

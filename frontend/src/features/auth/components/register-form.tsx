@@ -28,7 +28,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRegister } from "../hooks/use-auth";
-import { registerSchema } from "../schemas/register-schema";
+import { registerSchema, registerServerSchema } from "../schemas/register-schema";
 
 export default function RegisterForm() {
     const [showPassword, setShowPassword] = useState(false);
@@ -58,35 +58,9 @@ export default function RegisterForm() {
 
     const selectedUserType = registerForm.watch("userType");
 
-    const onSubmit = (data: z.infer<typeof registerSchema>) => {
-        let payload: any = {
-            email: data.email,
-            password: data.password,
-            userType: data.userType,
-            phoneNumber: data.phoneNumber,
-        };
-
-        if (data.userType === "PATIENT") {
-            payload.firstName = data.firstName;
-            payload.lastName = data.lastName;
-            payload.dateOfBirth = data.dateOfBirth;
-            if (data.address && data.address.trim() !== "") {
-                payload.address = data.address;
-            }
-        } else if (data.userType === "PROVIDER") {
-            payload.firstName = data.firstName;
-            payload.lastName = data.lastName;
-            payload.specialty = data.specialty;
-            payload.licenseNumber = data.licenseNumber;
-        } else if (data.userType === "FACILITY") {
-            payload.name = data.facilityName;
-            payload.type = data.facilityType;
-            payload.address = data.address;
-        }
-
-        console.log("Payload envoyé:", payload); // Pour déboguer
-        register(payload);
-    };
+const onSubmit = (data: z.infer<typeof registerSchema>) => {
+    register(data as z.infer<typeof registerServerSchema>);
+};
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden py-20">

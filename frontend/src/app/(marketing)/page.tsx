@@ -17,7 +17,7 @@ export default function HomePage() {
                         <div className="space-y-8">
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-effect border border-border/50 text-sm font-medium">
                                 <Activity className="w-4 h-4 text-primary" />
-                                <span>World's Most Adopted Healthcare AI</span>
+                                <span>World&apos;s Most Adopted Healthcare AI</span>
                             </div>
 
                             <h1 className="text-6xl md:text-7xl font-bold tracking-tight text-balance leading-[1.1]">

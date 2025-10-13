@@ -47,7 +47,7 @@ export default function RequestAccessDialog({ open, setOpen }: RequestAccessDial
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Demander l'accès au dossier</DialogTitle>
+                    <DialogTitle>Demander l&apos;accès au dossier</DialogTitle>
                     <DialogDescription>Scannez le code QR ou entrez le code fourni par le patient</DialogDescription>
                 </DialogHeader>
 
@@ -66,7 +66,7 @@ export default function RequestAccessDialog({ open, setOpen }: RequestAccessDial
                     <TabsContent value="code" className="space-y-4 mt-4">
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="code">Code d'accès</Label>
+                                <Label htmlFor="code">Code d&apos;accès</Label>
                                 <Input
                                     id="code"
                                     value={code}
@@ -93,7 +93,7 @@ export default function RequestAccessDialog({ open, setOpen }: RequestAccessDial
                                 <QrCode className="h-16 w-16 text-muted-foreground" />
                             </div>
                             <p className="text-center text-muted-foreground">
-                                Scanner un code QR pour demander l'accès automatiquement
+                                Scanner un code QR pour demander l&apos;accès automatiquement
                             </p>
                             <Button onClick={handleScan} className="gap-2">
                                 <Camera className="h-4 w-4" />

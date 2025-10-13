@@ -16,7 +16,7 @@ type Props = {
 export default async function ProviderPatientDetailPage({ params }: Props) {
     // Await params avant de l'utiliser
     const { patientId } = await params;
-    
+
     const isUserProvider = await isProvider();
 
     if (!isUserProvider) {
@@ -25,7 +25,7 @@ export default async function ProviderPatientDetailPage({ params }: Props) {
 
     const patientsData = await getProviderPatients();
     const patients = patientsData?.data || [];
-    const patient = patients.find((p: any) => p.patientId === patientId);
+    const patient = patients.find((p: { patientId: string }) => p.patientId === patientId);
 
     if (!patient) {
         return redirect("/dashboard/provider/patients");

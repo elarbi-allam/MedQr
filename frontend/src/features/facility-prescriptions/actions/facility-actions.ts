@@ -50,7 +50,7 @@ export const scanCodeAndRequestAccess = async (
             message: "Demande envoyée avec succès",
             data: null,
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         return errorResponse(error, "scanCodeAndRequestAccess");
     }
 };
@@ -76,7 +76,7 @@ export const getMyApprovedRequests = async (
             message: "Demandes approuvées récupérées",
             data: response.data,
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         return errorResponse(error, "getMyApprovedRequests");
     }
 };
@@ -96,7 +96,7 @@ export const viewPrescriptionDetails = async (
             message: "Détails récupérés",
             data: response.data,
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         return errorResponse(error, "viewPrescriptionDetails");
     }
 };
@@ -114,7 +114,7 @@ export const viewPrescriptionDocument = async (requestId: string): Promise<Actio
             message: "Document récupéré",
             data: response.data as Blob,
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         return errorResponse(error, "viewPrescriptionDocument");
     }
 };
@@ -135,7 +135,7 @@ export const uploadPrescriptionResult = async (
             message: "Résultat ajouté avec succès",
             data: null,
         };
-    } catch (error: any) {
+    } catch (error: unknown) {
         return errorResponse(error, "uploadPrescriptionResult");
     }
 };

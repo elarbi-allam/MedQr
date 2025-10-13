@@ -5,11 +5,12 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, Calendar, Phone, QrCode, KeyRound } from "lucide-react";
+import { Users, Calendar, Phone, QrCode } from "lucide-react";
 import { useProviderPatients } from "../../hooks/use-provider-records";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import RequestAccessDialog from "./request-access-dialog";
+import { PatientType } from "../../types/medical-record.types";
 
 export default function ProviderPatientsList() {
     const [accessDialogOpen, setAccessDialogOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function ProviderPatientsList() {
                         <Users className="h-16 w-16 text-muted-foreground mb-4 opacity-50" />
                         <p className="text-lg font-medium mb-2">Aucun patient</p>
                         <p className="text-muted-foreground mb-4 text-center">
-                            Scannez le code QR d'un patient pour accéder à son dossier
+                            Scannez le code QR d&apos;un patient pour accéder à son dossier
                         </p>
                         <Button onClick={() => setAccessDialogOpen(true)} className="gap-2">
                             <QrCode className="h-4 w-4" />
@@ -68,7 +69,7 @@ export default function ProviderPatientsList() {
                 </Card>
             ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {patients.map((patient: any) => (
+                    {patients.map((patient: PatientType) => (
                         <Card
                             key={patient.patientId}
                             className="hover:shadow-lg transition-shadow cursor-pointer"

@@ -6,18 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Pill, Calendar, Stethoscope, QrCode, Eye, ChevronLeft, ChevronRight, Filter, Building2 } from "lucide-react";
+import { Pill, Calendar, Stethoscope, QrCode, ChevronLeft, ChevronRight, Filter, Building2 } from "lucide-react";
 import { usePatientPrescriptions } from "../../hooks/use-patient-records";
 import { Skeleton } from "@/components/ui/skeleton";
 import GeneratePrescriptionCodeDialog from "@/features/facility-prescriptions/components/patient/generate-prescription-code-dialog";
 import PrescriptionRequestsDialog from "@/features/facility-prescriptions/components/patient/prescription-requests-dialog";
+import { PrescriptionType } from "../../types/medical-record.types";
 
 export default function PatientPrescriptionsTab() {
     const [page, setPage] = useState(0);
     const [filter, setFilter] = useState<string>("all");
     const [codeDialogOpen, setCodeDialogOpen] = useState(false);
     const [requestsDialogOpen, setRequestsDialogOpen] = useState(false);
-    const [selectedPrescription, setSelectedPrescription] = useState<any>(null);
+    const [selectedPrescription, setSelectedPrescription] = useState<PrescriptionType | null>(null);
     const pageSize = 10;
 
     const getFilterValue = (): boolean | null | undefined => {
@@ -38,12 +39,12 @@ export default function PatientPrescriptionsTab() {
     const isFirstPage = prescriptionsData?.data?.first ?? true;
     const isLastPage = prescriptionsData?.data?.last ?? true;
 
-    const handleGenerateCode = (prescription: any) => {
+    const handleGenerateCode = (prescription: PrescriptionType) => {
         setSelectedPrescription(prescription);
         setCodeDialogOpen(true);
     };
 
-    const handleViewRequests = (prescription: any) => {
+    const handleViewRequests = (prescription: PrescriptionType) => {
         setSelectedPrescription(prescription);
         setRequestsDialogOpen(true);
     };
@@ -109,7 +110,7 @@ export default function PatientPrescriptionsTab() {
             ) : (
                 <>
                     <div className="space-y-4">
-                        {prescriptions.map((prescription: any) => (
+                        {prescriptions.map((prescription: PrescriptionType) => (
                             <Card key={prescription.prescriptionId} className="hover:shadow-lg transition-shadow">
                                 <CardHeader>
                                     <div className="flex items-start justify-between">

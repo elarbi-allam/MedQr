@@ -125,9 +125,9 @@ export function useViewPatientDocument() {
                 toast.error(data.message || "Impossible de récupérer le document");
             }
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
             console.error("View error:", error);
-            toast.error("Erreur: " + (error.message || "Impossible de visualiser le document"));
+            toast.error("Erreur: " + (error instanceof Error ? error.message : "Impossible de visualiser le document"));
         },
     });
 }
@@ -158,9 +158,10 @@ export function useDownloadPatientDocument() {
                 toast.error(data.message || "Impossible de télécharger le document");
             }
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
             console.error("Download error:", error);
-            toast.error("Erreur: " + (error.message || "Impossible de télécharger"));
+            toast.error("Erreur: " + (error instanceof Error ? error.message : "Impossible de télécharger"));
+
         },
     });
 }
