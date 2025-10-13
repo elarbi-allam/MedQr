@@ -213,7 +213,7 @@ response: {
     "isCompleted": null
 }]
 
-$RootPath = "C:\Users\ELARBI\Desktop\medical-record-app\frontend\src" # <- Mets ici ton chemin
+$RootPath = "C:\Users\ELARBI\Desktop\medical-record-app\backend\src" # <- Mets ici ton chemin
 
 $MaxDepth = 8                   # <- Nombre de niveaux à explorer
 
