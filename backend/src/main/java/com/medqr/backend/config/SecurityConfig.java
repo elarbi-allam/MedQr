@@ -37,7 +37,7 @@ public class SecurityConfig {
         // Liste des origines autorisées (ajoutez votre URL de production ici)
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",                    // Développement local
-                "https://votre-app.vercel.app",            // Vercel
+                "https://med-qr-two.vercel.app",            // Vercel
                 "https://votre-domaine.com"                // Votre domaine de production
         ));
 
