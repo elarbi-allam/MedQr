@@ -40,6 +40,7 @@ public class PatientPrescriptionController {
                 .details(p.getDetails())
                 .prescriptionDate(p.getPrescriptionDate())
                 .relatedDocumentId(p.getRelatedDocument().getDocumentId())
+                .isCompleted(p.getIsCompleted())
                 .build());
 
         return ResponseEntity.ok(response);
