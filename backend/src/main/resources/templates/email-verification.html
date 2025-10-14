@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification de votre compte</title>
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #374151;
+            background: linear-gradient(135deg, #D6E8F7 0%, #E0E2E8 50%, #f8fafc 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(210, 214, 220, 0.5);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #529bb1 0%, #67a9bd 50%, #7bb7c9 100%);
+            padding: 50px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-subtitle {
+            opacity: 0.95;
+            font-size: 16px;
+            font-weight: 400;
+            position: relative;
+        }
+
+        .content {
+            padding: 45px 35px;
+            background: white;
+        }
+
+        .welcome-text {
+            font-size: 18px;
+            margin-bottom: 25px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .verification-section {
+            text-align: center;
+            margin: 35px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .verification-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #529bb1 0%, #67a9bd 100%);
+            color: white;
+            padding: 16px 40px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(82, 155, 177, 0.3);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .verification-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .verification-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(82, 155, 177, 0.4);
+            background: linear-gradient(135deg, #4a8fa3 0%, #5d9db1 100%);
+        }
+
+        .verification-button:hover::before {
+            left: 100%;
+        }
+
+        .code-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .verification-code {
+            font-family: 'Courier New', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            color: #529bb1;
+            letter-spacing: 3px;
+            padding: 12px 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px dashed #cbd5e1;
+            margin: 15px 0;
+            display: inline-block;
+            min-width: 200px;
+        }
+
+        .link-text {
+            word-break: break-all;
+            color: #529bb1;
+            margin: 18px 0;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #fef7ed 0%, #fef3c7 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            color: #92400e;
+        }
+
+        .instructions strong {
+            color: #d97706;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 30px 35px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .social-links {
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-link {
+            color: #529bb1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+        }
+
+        .social-link:hover {
+            color: #4a8fa3;
+            background: rgba(82, 155, 177, 0.1);
+            border-color: rgba(82, 155, 177, 0.2);
+        }
+
+        .highlight {
+            color: #529bb1;
+            font-weight: 600;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 30px 0;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                background: #f8fafc;
+            }
+
+            .container {
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .content {
+                padding: 30px 25px;
+            }
+
+            .header {
+                padding: 40px 25px;
+            }
+
+            .logo {
+                font-size: 28px;
+            }
+
+            .verification-button {
+                padding: 14px 32px;
+                font-size: 15px;
+            }
+
+            .social-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .social-link {
+                display: block;
+                text-align: center;
+            }
+        }
+
+        /* Animation subtile pour le container */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- En-tête -->
+    <div class="header">
+        <div class="logo">${appName}</div>
+        <div class="logo-subtitle">Votre santé, notre priorité</div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="content">
+        <p class="welcome-text">Bonjour,</p>
+
+        <p>Merci de vous être inscrit sur <strong class="highlight">${appName}</strong>. Pour finaliser votre inscription et accéder à toutes les fonctionnalités, veuillez vérifier votre adresse email.</p>
+
+        <div class="verification-section">
+            <p style="margin-bottom: 20px; font-size: 17px;"><strong>Cliquez sur le bouton ci-dessous pour activer votre compte :</strong></p>
+            <a href="${verificationLink}" class="verification-button">
+                Activer mon compte
+            </a>
+        </div>
+
+        <div class="code-container">
+            <p style="margin-bottom: 15px; font-weight: 600; color: #475569;">Lien de vérification :</p>
+            <div class="link-text">${verificationLink}</div>
+
+            <div class="divider"></div>
+
+            <p style="margin-bottom: 15px; font-weight: 600; color: #475569;">Ou utilisez ce code manuellement :</p>
+            <div class="verification-code">${verificationCode}</div>
+        </div>
+
+        <div class="instructions">
+            <strong>⚠️ Important :</strong> Ce lien et ce code expireront dans 24 heures. Si vous ne vérifiez pas votre compte dans ce délai, vous devrez en demander un nouveau.
+        </div>
+
+        <p style="margin-bottom: 15px;">Si vous rencontrez des problèmes avec le bouton, copiez et collez l'URL ci-dessus dans votre navigateur.</p>
+
+        <p style="color: #64748b;">Si vous n'avez pas créé de compte sur <strong class="highlight">${appName}</strong>, veuillez ignorer cet email.</p>
+    </div>
+
+    <!-- Pied de page -->
+    <div class="footer">
+        <p style="font-size: 16px; font-weight: 600; color: #529bb1; margin-bottom: 10px;">${appName}</p>
+        <p style="margin-bottom: 20px;">Plateforme médicale sécurisée</p>
+
+        <p style="margin-bottom: 25px; font-size: 13px;">Cet email a été envoyé automatiquement, merci de ne pas y répondre.</p>
+
+        <div class="social-links">
+            <a href="${baseUrl}" class="social-link">Site Web</a>
+            <a href="${baseUrl}/contact" class="social-link">Contact</a>
+            <a href="${baseUrl}/privacy" class="social-link">Confidentialité</a>
+            <a href="${baseUrl}/help" class="social-link">Aide</a>
+        </div>
+
+        <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+            <p style="font-size: 12px; color: #94a3b8;">&copy; 2024 ${appName}. Tous droits réservés.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
