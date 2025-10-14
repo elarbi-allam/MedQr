@@ -28,7 +28,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("no-reply@medqr.com", appConfig.getAppName());
+            helper.setFrom("mema63397@gmail.com", appConfig.getAppName());
             helper.setTo(recipientEmail);
             helper.setSubject("Activez votre compte " + appConfig.getAppName());
 
