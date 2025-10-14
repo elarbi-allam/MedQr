@@ -182,7 +182,7 @@ export default function HomePage() {
                             </div>
                             <h3 className="text-xl font-semibold">Résultats Instantanés</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Recevez une notification dès que vos résultats d'analyses sont disponibles. Plus besoin d'attendre ou de téléphoner.
+                                Recevez une notification dès que vos résultats d&apos;analyses sont disponibles. Plus besoin d&apos;attendre ou de téléphoner.
                             </p>
                         </Card>
 
