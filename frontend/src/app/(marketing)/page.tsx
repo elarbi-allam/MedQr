@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Activity, Shield, Zap, QrCode, FileText, Users, ArrowRight, CheckCircle, Star } from "lucide-react";
 import Image from "next/image";
+
 export default function HomePage() {
     return (
         <div className="min-h-screen">
@@ -17,18 +18,16 @@ export default function HomePage() {
                         <div className="space-y-8">
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-effect border border-border/50 text-sm font-medium">
                                 <Activity className="w-4 h-4 text-primary" />
-                                <span>World&apos;s Most Adopted Healthcare AI</span>
+                                <span>La plateforme de santé la plus adoptée</span>
                             </div>
 
                             <h1 className="text-6xl md:text-7xl font-bold tracking-tight text-balance leading-[1.1]">
-                                Revolutionizing
-                                <span className="block mt-2">Healthcare with AI</span>
+                                Votre dossier médical
+                                <span className="block mt-2">Centralisé et Sécurisé</span>
                             </h1>
 
                             <p className="text-xl text-muted-foreground max-w-xl text-pretty leading-relaxed">
-                                Transform health with AI. Diagnostics, treatments, and care, innovatively designed by
-                                MedQR. Explore the future of medicine. Empower healthcare professionals and patients
-                                alike.
+                                Gérez tous vos documents médicaux en un seul endroit. Analyses, scanners, ordonnances et comptes rendus accessibles à tout moment. Partagez vos informations de santé en toute sécurité avec vos médecins.
                             </p>
 
                             <div className="flex flex-wrap gap-4 pt-4">
@@ -38,7 +37,7 @@ export default function HomePage() {
                                         className="h-12 px-8 text-base rounded-full bg-foreground text-background hover:bg-foreground/90"
                                     >
                                         <Activity className="w-5 h-5 mr-2" />
-                                        Book a call
+                                        Commencer
                                     </Button>
                                 </Link>
                                 <Link href="#features">
@@ -47,7 +46,7 @@ export default function HomePage() {
                                         variant="outline"
                                         className="h-12 px-8 text-base rounded-full bg-transparent"
                                     >
-                                        Appointment
+                                        En savoir plus
                                     </Button>
                                 </Link>
                             </div>
@@ -67,7 +66,7 @@ export default function HomePage() {
                                     ))}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-semibold">Rated 5/5 & Trusted by</p>
+                                    <p className="text-sm font-semibold">Noté 5/5 et approuvé par</p>
                                     <p className="text-2xl font-bold">1000+ Patients</p>
                                 </div>
                             </div>
@@ -78,7 +77,7 @@ export default function HomePage() {
                             {/* Main Image Placeholder */}
                             <Image
                                 src="/images/doctor.jpg"
-                                alt="Doctor Illustration"
+                                alt="Illustration Médecin"
                                 width={320}
                                 height={320}
                                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-3xl object-cover"
@@ -91,9 +90,9 @@ export default function HomePage() {
                                         {[1, 2, 3].map((i) => (
                                             <Image
                                                 key={i}
-                                                src={`/images/Doctor-${i}.png`} // 🔹 Mets tes images dans /public/images/
-                                                alt={`User ${i}`}
-                                                width={32} // 8 * 4 = 32px
+                                                src={`/images/Doctor-${i}.png`}
+                                                alt={`Médecin ${i}`}
+                                                width={32}
                                                 height={32}
                                                 className="w-8 h-8 rounded-full border-2 border-background object-cover"
                                             />
@@ -101,7 +100,7 @@ export default function HomePage() {
                                     </div>
                                     <div>
                                         <p className="text-2xl font-bold">300+</p>
-                                        <p className="text-xs text-muted-foreground">Expert doctors</p>
+                                        <p className="text-xs text-muted-foreground">Médecins experts</p>
                                     </div>
                                 </div>
                             </Card>
@@ -111,14 +110,14 @@ export default function HomePage() {
                                 <div className="space-y-2">
                                     <Image
                                         src="/images/medical-record1.png"
-                                        alt="Medical record"
+                                        alt="Dossier médical"
                                         width={128}
                                         height={96}
                                         className="rounded-lg object-cover"
                                     />
 
-                                    <p className="text-lg font-semibold">5,000+</p>
-                                    <p className="text-xs text-muted-foreground">Design by MedQR</p>
+                                    <p className="text-lg font-semibold">5 000+</p>
+                                    <p className="text-xs text-muted-foreground">Dossiers gérés</p>
                                 </div>
                             </Card>
 
@@ -126,7 +125,7 @@ export default function HomePage() {
                             <Card className="absolute top-1/2 right-12 p-3 glass-effect border-border/50 shadow-xl">
                                 <div className="flex items-center gap-2">
                                     <CheckCircle className="w-5 h-5 text-secondary" />
-                                    <span className="text-sm font-medium">Verified Results</span>
+                                    <span className="text-sm font-medium">Résultats Certifiés</span>
                                 </div>
                             </Card>
                         </div>
@@ -139,10 +138,10 @@ export default function HomePage() {
                 <div className="container mx-auto max-w-7xl relative z-10">
                     <div className="text-center mb-16 space-y-4">
                         <h2 className="text-4xl md:text-5xl font-bold text-balance">
-                            Comprehensive Healthcare Management
+                            Gestion Complète de Votre Santé
                         </h2>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-                            Everything you need to manage, share, and secure medical records in one platform
+                            Tout ce dont vous avez besoin pour gérer, partager et sécuriser vos documents médicaux sur une seule plateforme
                         </p>
                     </div>
 
@@ -151,10 +150,9 @@ export default function HomePage() {
                             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <QrCode className="w-7 h-7 text-primary" />
                             </div>
-                            <h3 className="text-xl font-semibold">QR Code Access</h3>
+                            <h3 className="text-xl font-semibold">Accès par Code QR</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Secure, temporary access to your medical records via QR codes. You control who sees what
-                                and for how long.
+                                Partagez vos documents médicaux de façon sécurisée via des codes QR temporaires. Vous contrôlez qui voit quoi et pour combien de temps.
                             </p>
                         </Card>
 
@@ -162,10 +160,9 @@ export default function HomePage() {
                             <div className="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <FileText className="w-7 h-7 text-secondary" />
                             </div>
-                            <h3 className="text-xl font-semibold">Centralized Records</h3>
+                            <h3 className="text-xl font-semibold">Dossier Centralisé</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                All your medical documents in one place - analyses, scans, prescriptions, and reports
-                                from any healthcare provider.
+                                Tous vos documents médicaux en un seul endroit : analyses, scanners, radios, ordonnances et comptes rendus de tous vos établissements de santé.
                             </p>
                         </Card>
 
@@ -173,10 +170,9 @@ export default function HomePage() {
                             <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <Shield className="w-7 h-7 text-accent" />
                             </div>
-                            <h3 className="text-xl font-semibold">Privacy First</h3>
+                            <h3 className="text-xl font-semibold">Confidentialité Garantie</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Your data is encrypted and protected. Complete audit trail of who accessed your records
-                                and when.
+                                Vos données sont chiffrées et protégées. Traçabilité complète de qui a accédé à vos documents et quand.
                             </p>
                         </Card>
 
@@ -184,9 +180,9 @@ export default function HomePage() {
                             <div className="w-14 h-14 rounded-2xl bg-chart-3/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <Zap className="w-7 h-7 text-chart-3" />
                             </div>
-                            <h3 className="text-xl font-semibold">Instant Results</h3>
+                            <h3 className="text-xl font-semibold">Résultats Instantanés</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Get notified immediately when lab results are ready. No more waiting or phone calls.
+                                Recevez une notification dès que vos résultats d'analyses sont disponibles. Plus besoin d'attendre ou de téléphoner.
                             </p>
                         </Card>
 
@@ -194,10 +190,9 @@ export default function HomePage() {
                             <div className="w-14 h-14 rounded-2xl bg-chart-4/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <Users className="w-7 h-7 text-chart-4" />
                             </div>
-                            <h3 className="text-xl font-semibold">Seamless Collaboration</h3>
+                            <h3 className="text-xl font-semibold">Collaboration Fluide</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Connect patients, doctors, labs, and hospitals in one integrated ecosystem for better
-                                care.
+                                Connectez patients, médecins, laboratoires et hôpitaux dans un écosystème intégré pour de meilleurs soins.
                             </p>
                         </Card>
 
@@ -205,10 +200,9 @@ export default function HomePage() {
                             <div className="w-14 h-14 rounded-2xl bg-chart-5/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <Activity className="w-7 h-7 text-chart-5" />
                             </div>
-                            <h3 className="text-xl font-semibold">Complete History</h3>
+                            <h3 className="text-xl font-semibold">Historique Complet</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Track medications, vaccinations, chronic conditions, and allergies for comprehensive
-                                health management.
+                                Suivez vos traitements, vaccinations, maladies chroniques et allergies pour une gestion complète de votre santé.
                             </p>
                         </Card>
                     </div>
@@ -221,16 +215,15 @@ export default function HomePage() {
                     <Card className="p-12 md:p-16 text-center space-y-8 glass-effect border-border/50 shadow-2xl">
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
                             <Star className="w-4 h-4" />
-                            <span>Join 1000+ Healthcare Professionals</span>
+                            <span>Rejoignez 1000+ Professionnels de Santé</span>
                         </div>
 
                         <h2 className="text-4xl md:text-5xl font-bold text-balance leading-tight">
-                            Ready to Transform Your Healthcare Experience?
+                            Prêt à Transformer Votre Gestion de Santé ?
                         </h2>
 
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty leading-relaxed">
-                            Join thousands of patients and healthcare providers using MedQR for secure, efficient
-                            medical record management.
+                            Rejoignez des milliers de patients et professionnels de santé qui utilisent MedQR pour une gestion sécurisée et efficace des dossiers médicaux.
                         </p>
 
                         <div className="flex flex-wrap gap-4 justify-center pt-4">
@@ -239,7 +232,7 @@ export default function HomePage() {
                                     size="lg"
                                     className="h-12 px-8 text-base rounded-full bg-foreground text-background hover:bg-foreground/90"
                                 >
-                                    Get Started
+                                    Commencer
                                     <ArrowRight className="w-5 h-5 ml-2" />
                                 </Button>
                             </Link>
@@ -249,7 +242,7 @@ export default function HomePage() {
                                     variant="outline"
                                     className="h-12 px-8 text-base rounded-full bg-transparent"
                                 >
-                                    Learn More
+                                    En savoir plus
                                 </Button>
                             </Link>
                         </div>
@@ -267,7 +260,7 @@ export default function HomePage() {
                             </div>
                             <span className="font-bold">MedQR</span>
                         </div>
-                        <p className="text-sm text-muted-foreground">© 2025 MedQR. All rights reserved.</p>
+                        <p className="text-sm text-muted-foreground">© 2025 MedQR. Tous droits réservés.</p>
                     </div>
                 </div>
             </footer>
