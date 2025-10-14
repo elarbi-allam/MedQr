@@ -1,4 +1,3 @@
-// frontend/src/features/medical-records/actions/provider-actions.ts
 "use server";
 
 import { errorResponse } from "@/lib/helpers/error-response";

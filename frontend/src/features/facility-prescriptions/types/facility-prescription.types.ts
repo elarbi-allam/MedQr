@@ -1,4 +1,3 @@
-// frontend/src/features/facility-prescriptions/types/facility-prescription.types.ts
 export enum FacilityRequestStatus {
     PENDING = "PENDING",
     APPROVED = "APPROVED",

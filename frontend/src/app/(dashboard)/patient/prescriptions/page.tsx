@@ -1,4 +1,3 @@
-// frontend/src/app/(dashboard)/patient/prescriptions/page.tsx
 import { redirect } from "next/navigation";
 import { isPatient } from "@/features/auth/dal/role-checks";
 import PatientPrescriptionsTab from "@/features/medical-records/components/patient/patient-prescriptions-tab";

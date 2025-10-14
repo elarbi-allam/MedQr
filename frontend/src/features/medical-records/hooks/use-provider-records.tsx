@@ -1,4 +1,3 @@
-// frontend/src/features/medical-records/hooks/use-provider-records.tsx
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

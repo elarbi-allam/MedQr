@@ -1,4 +1,3 @@
-// frontend/src/features/medical-records/components/patient/patient-prescriptions-tab.tsx
 "use client";
 
 import { useState } from "react";

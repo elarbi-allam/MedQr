@@ -1,4 +1,3 @@
-// frontend/src/features/facility-prescriptions/components/facility/scan-prescription-dialog.tsx
 "use client";
 
 import { useState } from "react";

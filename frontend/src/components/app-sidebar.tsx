@@ -13,6 +13,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Syringe,
+    HeartPulse,
 } from "lucide-react";
 
 import {
@@ -39,9 +40,9 @@ export function getDashboardUrlByUserType(userType: UserType | undefined): strin
         case UserType.PATIENT:
             return "/patient";
         case UserType.PROVIDER:
-            return "/provider/dashboard";
+            return "/provider";
         case UserType.FACILITY:
-            return "/facility/dashboard";
+            return "/facility";
         default:
             return "/";
     }
@@ -62,9 +63,19 @@ const getUserSpecificItems = () => {
                 icon: FileText,
             },
             {
+                title: "Mes Médicaments",
+                url: "/patient/medications",
+                icon: Pill,
+            },
+            {
+                title: "Mes Vaccinations",
+                url: "/patient/vaccinations",
+                icon: Syringe,
+            },
+            {
                 title: "Ordonnances",
                 url: "/patient/prescriptions",
-                icon: Pill,
+                icon: HeartPulse,
             },
             {
                 title: "Contrôle d'Accès",
@@ -75,11 +86,6 @@ const getUserSpecificItems = () => {
                 title: "Demandes établissements",
                 url: "/patient/facility-requests",
                 icon: Building2,
-            },
-            {
-                title: "Vaccinations",
-                url: "/patient/vaccinations",
-                icon: Syringe,
             },
         ],
         [UserType.PROVIDER]: [
@@ -94,9 +100,14 @@ const getUserSpecificItems = () => {
                 icon: Users,
             },
             {
-                title: "Ordonnances",
-                url: "/provider/prescriptions",
+                title: "Médicaments",
+                url: "/provider/medications",
                 icon: Pill,
+            },
+            {
+                title: "Vaccinations",
+                url: "/provider/vaccinations",
+                icon: Syringe,
             },
         ],
         [UserType.FACILITY]: [
@@ -130,6 +141,7 @@ function SidebarToggleButton() {
         </Button>
     );
 }
+
 // Type guards pour déterminer le type d'utilisateur
 const isPatient = (user: PatientProfile | ProviderProfile | FacilityProfile): user is PatientProfile =>
     user.userType === UserType.PATIENT;
@@ -139,6 +151,7 @@ const isProvider = (user: PatientProfile | ProviderProfile | FacilityProfile): u
 
 const isFacility = (user: PatientProfile | ProviderProfile | FacilityProfile): user is FacilityProfile =>
     user.userType === UserType.FACILITY;
+
 function UserWelcome() {
     const { data: user, isLoading, error } = useCurrentUser();
 

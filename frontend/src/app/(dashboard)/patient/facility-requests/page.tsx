@@ -1,4 +1,3 @@
-// frontend/src/app/(dashboard)/patient/facility-requests/page.tsx
 import { redirect } from "next/navigation";
 import { isPatient } from "@/features/auth/dal/role-checks";
 import FacilityRequestsManagement from "@/features/facility-prescriptions/components/patient/facility-requests-management";

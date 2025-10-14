@@ -1,4 +1,3 @@
-// frontend/src/features/medical-records/components/patient/patient-documents-list.tsx
 "use client";
 
 import { useState } from "react";

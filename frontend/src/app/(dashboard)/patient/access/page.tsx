@@ -1,4 +1,3 @@
-//frontend\src\app\(dashboard)\patient\access\page.tsx
 import { redirect } from "next/navigation";
 import { isPatient } from "@/features/auth/dal/role-checks";
 import AccessManagement from "@/features/medical-records/components/patient/access-management";

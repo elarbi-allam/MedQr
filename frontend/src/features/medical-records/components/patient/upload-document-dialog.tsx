@@ -1,4 +1,3 @@
-// frontend/src/features/medical-records/components/patient/upload-document-dialog.tsx
 "use client";
 
 import { useState } from "react";

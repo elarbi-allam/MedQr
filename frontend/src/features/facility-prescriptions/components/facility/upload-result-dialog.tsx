@@ -1,4 +1,3 @@
-// frontend/src/features/facility-prescriptions/components/facility/upload-result-dialog.tsx
 "use client";
 
 import { useState } from "react";

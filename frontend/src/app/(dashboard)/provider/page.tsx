@@ -1,10 +1,17 @@
-import { redirect } from 'next/navigation';
-import { isProvider } from '@/features/auth/dal/role-checks';
-export default  async function ProviderDashboard() {
-  const isUserProvider = await isProvider();
+import { redirect } from "next/navigation";
+import { isProvider } from "@/features/auth/dal/role-checks";
+import ProviderDashboardStats from "@/features/medical-records/components/provider/provider-dashboard-stats";
 
-  if (!isUserProvider) {
-    return redirect('/unauthorized');
-  }
-    return <p>Provider dashboard</p>;
+export default async function ProviderDashboardPage() {
+    const isUserProvider = await isProvider();
+
+    if (!isUserProvider) {
+        return redirect("/unauthorized");
+    }
+
+    return (
+        <div className="container mx-auto py-6">
+            <ProviderDashboardStats />
+        </div>
+    );
 }

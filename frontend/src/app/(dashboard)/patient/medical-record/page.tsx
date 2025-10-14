@@ -1,4 +1,3 @@
-//frontend\src\app\(dashboard)\patient\medical-record\page.tsx
 import { redirect } from "next/navigation";
 import { isPatient } from "@/features/auth/dal/role-checks";
 import PatientDocumentsList from "@/features/medical-records/components/patient/patient-documents-list";

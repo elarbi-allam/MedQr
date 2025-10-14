@@ -1,4 +1,3 @@
-// frontend/src/features/medical-records/components/provider/patient-detail-view.tsx
 "use client";
 
 import { useState } from "react";

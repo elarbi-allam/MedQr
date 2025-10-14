@@ -1,4 +1,3 @@
-// frontend/src/features/facility-prescriptions/components/facility/facility-dashboard.tsx
 "use client";
 
 import { useState } from "react";

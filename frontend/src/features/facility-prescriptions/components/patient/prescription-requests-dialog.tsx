@@ -1,4 +1,3 @@
-// frontend/src/features/facility-prescriptions/components/patient/prescription-requests-dialog.tsx
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";

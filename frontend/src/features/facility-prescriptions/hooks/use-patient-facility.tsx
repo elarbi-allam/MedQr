@@ -1,4 +1,3 @@
-// frontend/src/features/facility-prescriptions/hooks/use-patient-facility.tsx
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

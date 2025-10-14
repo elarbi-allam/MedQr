@@ -1,47 +1,46 @@
-// frontend\src\app\(dashboard)\provider\patients\[patientId]\page.tsx
 import { redirect } from "next/navigation";
 import { isProvider } from "@/features/auth/dal/role-checks";
 import { getProviderPatients } from "@/features/medical-records/actions/provider-actions";
-import PatientDetailView from "@/features/medical-records/components/provider/patient-detail-view";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import PatientDetailViewExtended from "@/features/medical-records/components/provider/patient-detail-view-extended";
 
 type Props = {
-    params: Promise<{
-        patientId: string;
-    }>;
+  params: Promise<{
+    patientId: string;
+  }>;
 };
 
 export default async function ProviderPatientDetailPage({ params }: Props) {
-    // Await params avant de l'utiliser
-    const { patientId } = await params;
+  const { patientId } = await params;
 
-    const isUserProvider = await isProvider();
+  const isUserProvider = await isProvider();
+  if (!isUserProvider) {
+    return redirect("/unauthorized");
+  }
 
-    if (!isUserProvider) {
-        return redirect("/unauthorized");
-    }
+  const patientsData = await getProviderPatients();
+  const patients = patientsData?.data || [];
+  const patient = patients.find((p: { patientId: string }) => p.patientId === patientId);
 
-    const patientsData = await getProviderPatients();
-    const patients = patientsData?.data || [];
-    const patient = patients.find((p: { patientId: string }) => p.patientId === patientId);
+  if (!patient) {
+    return redirect("/dashboard/provider/patients");
+  }
 
-    if (!patient) {
-        return redirect("/dashboard/provider/patients");
-    }
+  return (
+    <div className="container mx-auto py-6">
+      <div className="mb-6">
+        <Link href="/dashboard/provider/patients">
+          <Button variant="ghost" className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Retour aux patients
+          </Button>
+        </Link>
+      </div>
 
-    return (
-        <div className="container mx-auto py-6">
-            <div className="mb-6">
-                <Link href="/dashboard/provider/patients">
-                    <Button variant="ghost" className="gap-2">
-                        <ArrowLeft className="h-4 w-4" />
-                        Retour aux patients
-                    </Button>
-                </Link>
-            </div>
-            <PatientDetailView patient={patient} />
-        </div>
-    );
+      {/* 👇 Ici on affiche le composant étendu */}
+      <PatientDetailViewExtended patientId={patientId} />
+    </div>
+  );
 }

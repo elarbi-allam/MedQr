@@ -1,4 +1,3 @@
-// frontend/src/features/facility-prescriptions/actions/patient-facility-actions.ts
 "use server";
 
 import { errorResponse } from "@/lib/helpers/error-response";

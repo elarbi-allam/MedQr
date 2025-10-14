@@ -1,4 +1,3 @@
-// frontend/src/features/medical-records/components/provider/request-access-dialog.tsx
 "use client";
 
 import { useState } from "react";

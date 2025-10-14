@@ -1,4 +1,3 @@
-// frontend/src/features/facility-prescriptions/components/patient/facility-requests-management.tsx
 "use client";
 
 import { useState } from "react";

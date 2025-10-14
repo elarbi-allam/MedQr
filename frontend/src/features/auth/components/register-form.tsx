@@ -63,7 +63,7 @@ const onSubmit = (data: z.infer<typeof registerSchema>) => {
 };
 
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden py-20">
+        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden py-20">
             <div className="w-full max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center relative z-10">
                 {/* SECTION GAUCHE */}
                 <div className="text-center lg:text-left animate-fade-in-up">

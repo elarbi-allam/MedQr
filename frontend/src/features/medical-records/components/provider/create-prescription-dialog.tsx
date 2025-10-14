@@ -1,4 +1,3 @@
-// frontend/src/features/medical-records/components/provider/create-prescription-dialog.tsx
 "use client";
 
 import { useState } from "react";

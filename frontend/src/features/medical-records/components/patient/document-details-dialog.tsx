@@ -1,4 +1,3 @@
-// frontend/src/features/medical-records/components/patient/document-details-dialog.tsx
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";

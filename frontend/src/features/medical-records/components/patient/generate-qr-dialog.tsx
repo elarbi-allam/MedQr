@@ -1,4 +1,3 @@
-// frontend/src/features/medical-records/components/patient/generate-qr-dialog.tsx
 "use client";
 
 import { useEffect, useState, useCallback } from "react";

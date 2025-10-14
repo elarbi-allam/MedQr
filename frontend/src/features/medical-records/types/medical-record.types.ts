@@ -1,5 +1,3 @@
-// frontend/src/features/medical-records/types/medical-record.types.ts
-
 export enum DocumentType {
     ANALYSIS = "ANALYSIS",
     SCAN = "SCAN",
