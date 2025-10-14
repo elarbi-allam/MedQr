@@ -33,7 +33,7 @@
 
         .header {
             background: linear-gradient(135deg, #529bb1 0%, #67a9bd 50%, #7bb7c9 100%);
-            padding: 50px 30px;
+            padding: 40px 30px 30px 30px;
             text-align: center;
             color: white;
             position: relative;
@@ -51,7 +51,21 @@
             background-size: cover;
         }
 
-        .logo {
+        .logo-container {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 20px;
+        }
+
+        .logo-image {
+            height: 60px;
+            width: auto;
+            max-width: 200px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+
+        .logo-fallback {
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 12px;
@@ -64,6 +78,7 @@
             font-size: 16px;
             font-weight: 400;
             position: relative;
+            z-index: 2;
         }
 
         .content {
@@ -234,11 +249,11 @@
             }
 
             .header {
-                padding: 40px 25px;
+                padding: 30px 25px 25px 25px;
             }
 
-            .logo {
-                font-size: 28px;
+            .logo-image {
+                height: 50px;
             }
 
             .verification-button {
@@ -278,7 +293,14 @@
 <div class="container">
     <!-- En-tête -->
     <div class="header">
-        <div class="logo">${appName}</div>
+        <div class="logo-container">
+            <!-- Logo avec fallback textuel -->
+            <img src="${baseUrl}/images/logo.png"
+                 alt="${appName}"
+                 class="logo-image"
+                 onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='block';">
+            <div id="fallback-logo" class="logo-fallback" style="display: none;">${appName}</div>
+        </div>
         <div class="logo-subtitle">Votre santé, notre priorité</div>
     </div>
 
@@ -316,16 +338,20 @@
 
     <!-- Pied de page -->
     <div class="footer">
+        <div style="margin-bottom: 20px;">
+            <img src="${baseUrl}/images/logo.png"
+                 alt="${appName}"
+                 style="height: 40px; width: auto; max-width: 150px; object-fit: contain;"
+                 onerror="this.style.display='none';">
+        </div>
         <p style="font-size: 16px; font-weight: 600; color: #529bb1; margin-bottom: 10px;">${appName}</p>
         <p style="margin-bottom: 20px;">Plateforme médicale sécurisée</p>
 
         <p style="margin-bottom: 25px; font-size: 13px;">Cet email a été envoyé automatiquement, merci de ne pas y répondre.</p>
 
         <div class="social-links">
-            <a href="${baseUrl}" class="social-link">Site Web</a>
-            <a href="${baseUrl}/contact" class="social-link">Contact</a>
-            <a href="${baseUrl}/privacy" class="social-link">Confidentialité</a>
-            <a href="${baseUrl}/help" class="social-link">Aide</a>
+            <a href="https://med-qr-two.vercel.app/" class="social-link">Site Web</a>
+            <a href="https://med-qr-two.vercel.app/#about" class="social-link">About</a>
         </div>
 
         <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
