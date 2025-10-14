@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Syringe, Search, Users, TrendingUp, Calendar } from "lucide-react";
+import { Syringe, Search, Users, Calendar } from "lucide-react";
 import { useProviderPatients } from "../../hooks/use-provider-records";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
